@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual Environments
+venv/
+.venv/
+env/
+
+# Environment Variables & Secrets
+.env
+.env.local
+*.env
+!.env.example
+
+# macOS
+.DS_Store
+
+# Temporary files & Logs
+*.log
+.tempmediaStorage/
+scratch/
