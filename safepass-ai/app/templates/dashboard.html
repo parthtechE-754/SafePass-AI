@@ -244,43 +244,74 @@
             renderBlackspotList(allSpots);
 
             // Add heatmap to dashboard map
-            dashMap.on('load', () => {
-                dashMap.addSource('dash-spots', { type: 'geojson', data: geojson });
+            const addDashLayers = () => {
+                if (!dashMap || !dashMap.isStyleLoaded()) return;
+                if (!dashMap.getSource('dash-spots')) {
+                    dashMap.addSource('dash-spots', { type: 'geojson', data: geojson });
 
-                dashMap.addLayer({
-                    id: 'dash-heat',
-                    type: 'heatmap',
-                    source: 'dash-spots',
-                    paint: {
-                        'heatmap-weight': ['interpolate', ['linear'], ['get', 'severity'], 0, 0, 10, 1],
-                        'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 0, 1, 10, 3],
-                        'heatmap-color': [
-                            'interpolate', ['linear'], ['heatmap-density'],
-                            0, 'rgba(0,0,0,0)',
-                            0.2, 'rgba(255,183,77,0.4)',
-                            0.4, 'rgba(255,112,67,0.6)',
-                            0.6, 'rgba(244,81,30,0.85)',
-                            1, 'rgba(198,40,40,1)'
-                        ],
-                        'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 0, 15, 10, 40],
-                        'heatmap-opacity': 0.85,
-                    }
-                });
+                    dashMap.addLayer({
+                        id: 'dash-heat',
+                        type: 'heatmap',
+                        source: 'dash-spots',
+                        paint: {
+                            'heatmap-weight': ['interpolate', ['linear'], ['get', 'severity'], 0, 0, 10, 1],
+                            'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 0, 1, 10, 3],
+                            'heatmap-color': [
+                                'interpolate', ['linear'], ['heatmap-density'],
+                                0, 'rgba(0,0,0,0)',
+                                0.2, 'rgba(255,183,77,0.4)',
+                                0.4, 'rgba(255,112,67,0.6)',
+                                0.6, 'rgba(244,81,30,0.85)',
+                                1, 'rgba(198,40,40,1)'
+                            ],
+                            'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 0, 15, 10, 40],
+                            'heatmap-opacity': 0.85,
+                        }
+                    });
 
-                dashMap.addLayer({
-                    id: 'dash-points',
-                    type: 'circle',
-                    source: 'dash-spots',
-                    minzoom: 6,
-                    paint: {
-                        'circle-radius': ['interpolate', ['linear'], ['get', 'severity'], 5, 6, 10, 16],
-                        'circle-color': ['interpolate', ['linear'], ['get', 'severity'], 0, '#16A34A', 4, '#D97706', 6, '#EA580C', 8, '#DC2626'],
-                        'circle-opacity': 0.9,
-                        'circle-stroke-width': 2,
-                        'circle-stroke-color': '#FFFFFF',
-                    }
-                });
-            });
+                    dashMap.addLayer({
+                        id: 'dash-points',
+                        type: 'circle',
+                        source: 'dash-spots',
+                        minzoom: 6,
+                        paint: {
+                            'circle-radius': ['interpolate', ['linear'], ['get', 'severity'], 5, 6, 10, 16],
+                            'circle-color': ['interpolate', ['linear'], ['get', 'severity'], 0, '#16A34A', 4, '#D97706', 6, '#EA580C', 8, '#DC2626'],
+                            'circle-opacity': 0.9,
+                            'circle-stroke-width': 2,
+                            'circle-stroke-color': '#FFFFFF',
+                        }
+                    });
+
+                    dashMap.on('click', 'dash-points', (e) => {
+                        const p = e.features[0].properties;
+                        const color = p.severity >= 8 ? '#DC2626' : p.severity >= 6 ? '#EA580C' : p.severity >= 4 ? '#D97706' : '#16A34A';
+                        new mapboxgl.Popup({ offset: 15 })
+                            .setLngLat(e.lngLat)
+                            .setHTML(`
+                                <div style="font-weight:700;font-size:14px;color:#0F172A;margin-bottom:4px;">${p.name}</div>
+                                <div style="display:inline-block;padding:2px 8px;border-radius:4px;background:${color}15;color:${color};font-weight:700;font-size:11px;margin-bottom:6px;">
+                                    Severity: ${p.severity}/10
+                                </div>
+                                <div style="font-size:12px;color:#475569;line-height:1.4;">
+                                    <strong>Highway:</strong> ${p.highway} (${p.state})<br>
+                                    <strong>Fatalities/yr:</strong> ${p.annual_fatalities}<br>
+                                    <em>${p.description || ''}</em>
+                                </div>
+                            `)
+                            .addTo(dashMap);
+                    });
+
+                    dashMap.on('mouseenter', 'dash-points', () => { dashMap.getCanvas().style.cursor = 'pointer'; });
+                    dashMap.on('mouseleave', 'dash-points', () => { dashMap.getCanvas().style.cursor = ''; });
+                }
+            };
+
+            if (dashMap && (dashMap.isStyleLoaded() || dashMap.loaded())) {
+                addDashLayers();
+            } else if (dashMap) {
+                dashMap.once('load', addDashLayers);
+            }
         });
     </script>
 </body>

@@ -76,6 +76,21 @@ class LogSosRequest(BaseModel):
     notes: Optional[str] = "Emergency call from SafePass Maps"
 
 
+# ── System Health Endpoint ───────────────────────────────────────────────
+
+@router.get("/health")
+async def api_health(request: Request):
+    """Return health status of SafePass AI."""
+    spots_count = len(getattr(request.app.state, "blackspots", []))
+    return {
+        "status": "healthy",
+        "service": "SafePass AI",
+        "version": "1.0.0",
+        "blackspots_loaded": spots_count,
+        "database": supabase_service.get_status()["mode"],
+    }
+
+
 # ── Blackspot Endpoints ──────────────────────────────────────────────────
 
 @router.get("/blackspots")
@@ -313,7 +328,7 @@ async def _fetch_osrm_routes(lat1: float, lng1: float, lat2: float, lng2: float)
     """Attempt to fetch real driving road geometry from OSRM."""
     url = f"https://router.project-osrm.org/route/v1/driving/{lng1},{lat1};{lng2},{lat2}?overview=full&geometries=geojson&alternatives=true&steps=true"
     try:
-        async with httpx.AsyncClient(timeout=3.0) as client:
+        async with httpx.AsyncClient(timeout=5.0) as client:
             resp = await client.get(url)
             if resp.status_code == 200:
                 data = resp.json()
@@ -354,7 +369,7 @@ async def _fetch_osrm_routes(lat1: float, lng1: float, lat2: float, lng2: float)
 async def compare_routes(request: Request, body: RouteRiskRequest):
     """
     Compare multiple route options between origin and destination.
-    Uses real OSRM road geometry if available, with intelligent corridor fallback.
+    Uses real OSRM road geometry if available, supplemented with intelligent corridor alternatives.
     """
     risk_engine: RiskEngine = request.app.state.risk_engine
 
@@ -367,10 +382,10 @@ async def compare_routes(request: Request, body: RouteRiskRequest):
     # Try fetching real OSRM routes first
     osrm_data = await _fetch_osrm_routes(body.origin_lat, body.origin_lng, body.dest_lat, body.dest_lng)
 
-    if osrm_data and len(osrm_data) > 0:
-        mid_point = osrm_data[0][1][len(osrm_data[0][1]) // 2]
-        weather = await get_weather(lat=mid_point[0], lng=mid_point[1])
+    mid_point = (body.origin_lat + body.dest_lat) / 2, (body.origin_lng + body.dest_lng) / 2
+    weather = await get_weather(lat=mid_point[0], lng=mid_point[1])
 
+    if osrm_data and len(osrm_data) > 0:
         for name, points, dist_km, est_time_min, steps in osrm_data:
             result = risk_engine.compute_route_risk(points, weather, now)
             routes.append({
@@ -386,43 +401,48 @@ async def compare_routes(request: Request, body: RouteRiskRequest):
                 "steps": steps,
                 "route_points": [{"lat": p[0], "lng": p[1]} for p in points],
             })
-    else:
-        # Fallback to realistic interpolated corridor variants
+
+    # If fewer than 3 route options (or OSRM failed/throttled), supplement with corridor variants
+    if len(routes) < 3:
+        existing_names = {r["name"] for r in routes}
+
         direct_points = _interpolate_route(
             body.origin_lat, body.origin_lng,
             body.dest_lat, body.dest_lng, 18
         )
 
-        mid_lat = (body.origin_lat + body.dest_lat) / 2 + 0.08
-        mid_lng = (body.origin_lng + body.dest_lng) / 2
+        mid_lat_n = (body.origin_lat + body.dest_lat) / 2 + 0.09
+        mid_lng_n = (body.origin_lng + body.dest_lng) / 2
         north_points = (
-            _interpolate_route(body.origin_lat, body.origin_lng, mid_lat, mid_lng, 9) +
-            _interpolate_route(mid_lat, mid_lng, body.dest_lat, body.dest_lng, 9)
+            _interpolate_route(body.origin_lat, body.origin_lng, mid_lat_n, mid_lng_n, 9) +
+            _interpolate_route(mid_lat_n, mid_lng_n, body.dest_lat, body.dest_lng, 9)
         )
 
-        mid_lat_s = (body.origin_lat + body.dest_lat) / 2 - 0.06
-        mid_lng_s = (body.origin_lng + body.dest_lng) / 2 + 0.04
+        mid_lat_s = (body.origin_lat + body.dest_lat) / 2 - 0.07
+        mid_lng_s = (body.origin_lng + body.dest_lng) / 2 + 0.05
         south_points = (
             _interpolate_route(body.origin_lat, body.origin_lng, mid_lat_s, mid_lng_s, 9) +
             _interpolate_route(mid_lat_s, mid_lng_s, body.dest_lat, body.dest_lng, 9)
         )
 
-        route_variants = [
+        supplemental_candidates = [
             ("Recommended Safe Corridor", direct_points),
-            ("Northern Bypass Route", north_points),
-            ("Southern Express Highway", south_points),
+            ("Northern Bypass Highway", north_points),
+            ("Southern Express Corridor", south_points),
         ]
 
-        mid = direct_points[len(direct_points) // 2]
-        weather = await get_weather(lat=mid[0], lng=mid[1])
+        for name, points in supplemental_candidates:
+            if len(routes) >= 3:
+                break
+            if name in existing_names:
+                continue
 
-        for name, points in route_variants:
             result = risk_engine.compute_route_risk(points, weather, now)
             dist = sum(
                 _haversine_distance(points[i][0], points[i][1], points[i+1][0], points[i+1][1])
                 for i in range(len(points) - 1)
             )
-            est_time_min = round(dist / 65 * 60)  # Assume ~65 km/h avg
+            est_time_min = round(dist / 65 * 60)
 
             routes.append({
                 "name": name,
@@ -436,12 +456,13 @@ async def compare_routes(request: Request, body: RouteRiskRequest):
                 "segments": result["segments"],
                 "steps": [
                     f"Start corridor drive on {name}",
-                    "Pass through automated surveillance checkpoint",
+                    "Pass through automated highway surveillance checkpoint",
                     "Maintain lane discipline through monitored sector",
                     "Arrive safely at destination"
                 ],
                 "route_points": [{"lat": p[0], "lng": p[1]} for p in points],
             })
+            existing_names.add(name)
 
     # Sort by safety score (highest safety first)
     routes.sort(key=lambda r: r["safety_score"], reverse=True)
@@ -528,16 +549,17 @@ async def get_temporal_risk(
 def _interpolate_route(
     lat1: float, lng1: float, lat2: float, lng2: float, num_segments: int
 ) -> list[tuple[float, float]]:
-    """Generate evenly spaced points along a great-circle path."""
+    """Generate evenly spaced points along a path, preserving exact start and end coordinates."""
     points = []
+    import random
     for i in range(num_segments + 1):
         t = i / num_segments
         lat = lat1 + t * (lat2 - lat1)
         lng = lng1 + t * (lng2 - lng1)
-        # Add slight natural variation to simulate road curves
-        import random
-        lat += random.uniform(-0.005, 0.005)
-        lng += random.uniform(-0.005, 0.005)
+        # Add slight natural variation to simulate road curves for intermediate points only
+        if 0 < i < num_segments:
+            lat += random.uniform(-0.004, 0.004)
+            lng += random.uniform(-0.004, 0.004)
         points.append((round(lat, 6), round(lng, 6)))
     return points
 

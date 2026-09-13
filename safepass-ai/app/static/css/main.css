@@ -462,8 +462,8 @@ html, body {
 }
 
 .gmap-select option {
-    background: #0F172A;
-    color: #F1F5F9;
+    background: #FFFFFF;
+    color: #0F172A;
 }
 
 .gmap-search-btn {
@@ -538,9 +538,10 @@ html, body {
 
 .route-count-badge {
     font-size: 0.7rem;
-    padding: 2px 7px;
-    background: rgba(59, 130, 246, 0.2);
-    color: #60A5FA;
+    padding: 2px 8px;
+    background: #FFF7ED;
+    color: #EA580C;
+    border: 1px solid rgba(234, 88, 12, 0.3);
     border-radius: 10px;
     font-weight: 600;
 }
@@ -588,14 +589,14 @@ html, body {
 
 .route-option-card:hover {
     background: var(--bg-card-hover);
-    border-color: rgba(59, 130, 246, 0.4);
+    border-color: rgba(234, 88, 12, 0.4);
     transform: translateX(2px);
 }
 
 .route-option-card.active {
-    background: rgba(30, 58, 138, 0.35);
-    border-color: #3B82F6;
-    box-shadow: 0 0 14px rgba(59, 130, 246, 0.2);
+    background: #FFF7ED;
+    border-color: #EA580C;
+    box-shadow: 0 2px 10px rgba(234, 88, 12, 0.18);
 }
 
 .route-card-left {
@@ -1664,4 +1665,121 @@ html, body {
 .service-icon { font-size: 1.2rem; }
 .service-item strong { display: block; font-size: 0.75rem; color: #0F172A; }
 .service-item span { font-size: 0.68rem; color: #64748B; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE & MOBILE DESIGN SYSTEM (Flutter / Native Mobile & PWA Parity)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+    /* Header optimization for mobile */
+    .gmaps-header {
+        padding: 0 10px;
+        height: 50px;
+    }
+    .header-tagline,
+    .header-hud {
+        display: none !important;
+    }
+    .header-right {
+        gap: 6px;
+    }
+    .header-btn {
+        padding: 5px 8px;
+        font-size: 0.72rem;
+    }
+    .header-btn.voice-btn .voice-label {
+        display: none;
+    }
+    #weather-badge {
+        display: none;
+    }
+    #live-status-badge .badge-text {
+        display: none;
+    }
+
+    /* Direction Card on Mobile */
+    .gmaps-floating-card {
+        top: 8px;
+        left: 8px;
+        right: 8px;
+        width: auto;
+        max-width: none;
+        padding: 10px 12px;
+        border-radius: var(--radius-md);
+    }
+    .travel-modes-bar {
+        padding-bottom: 6px;
+        margin-bottom: 6px;
+        gap: 4px;
+    }
+    .mode-btn {
+        padding: 5px 4px;
+        font-size: 0.72rem;
+    }
+    .fast-corridor-presets {
+        display: none; /* Hide presets on small mobile to give full screen to map */
+    }
+
+    /* Route Drawer as Mobile Bottom Sheet */
+    .gmaps-routes-drawer {
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        max-width: 100vw;
+        max-height: 60vh;
+        border-radius: 20px 20px 0 0;
+        border-bottom: none;
+        box-shadow: 0 -8px 24px rgba(15, 23, 42, 0.15);
+    }
+    .gmaps-routes-drawer.collapsed {
+        max-height: 52px;
+    }
+
+    /* Floating map controls on Mobile */
+    .gmaps-floating-controls {
+        right: 12px;
+        bottom: 70px;
+    }
+    .gmaps-floating-legend {
+        display: none; /* Collapsed on mobile */
+    }
+
+    /* Simulation HUD on Mobile */
+    .sim-hud-container {
+        top: 60px;
+        left: 10px;
+        right: 10px;
+        width: auto;
+        transform: none;
+    }
+
+    /* Modal responsiveness */
+    .sos-modal-card {
+        width: 95vw;
+        max-height: 90vh;
+        padding: 16px;
+        overflow-y: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .logo-text {
+        font-size: 1.05rem;
+    }
+    .logo-icon svg {
+        width: 24px;
+        height: 24px;
+    }
+    .header-btn {
+        padding: 4px 6px;
+        font-size: 0.68rem;
+    }
+    .sos-btn {
+        padding: 4px 8px;
+    }
+    .sos-numbers-grid {
+        grid-template-columns: 1fr;
+    }
+}
 

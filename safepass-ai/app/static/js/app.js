@@ -142,7 +142,8 @@ async function loadBlackspots() {
         const resp = await fetch('/api/blackspots');
         blackspotsGeojson = await resp.json();
 
-        map.on('load', () => {
+        const addBlackspotLayers = () => {
+            if (!map || !map.isStyleLoaded()) return;
             if (!map.getSource('blackspots')) {
                 map.addSource('blackspots', { type: 'geojson', data: blackspotsGeojson });
 
@@ -199,7 +200,13 @@ async function loadBlackspots() {
                 map.on('mouseenter', 'blackspot-points', () => { map.getCanvas().style.cursor = 'pointer'; });
                 map.on('mouseleave', 'blackspot-points', () => { map.getCanvas().style.cursor = ''; });
             }
-        });
+        };
+
+        if (map && (map.isStyleLoaded() || map.loaded())) {
+            addBlackspotLayers();
+        } else if (map) {
+            map.once('load', addBlackspotLayers);
+        }
     } catch (err) {
         console.error('Failed to load blackspots:', err);
     }
@@ -232,7 +239,7 @@ function showBlackspotPopup(props, lngLat) {
                 <strong>Corridor:</strong> ${props.highway} (${props.state})<br>
                 <strong>Annual Toll:</strong> ${props.annual_accidents} accidents · ${props.annual_fatalities} fatalities<br>
                 <strong>Factors:</strong> ${factorsFormatted}<br>
-                <div style="margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.1);font-style:italic;color:#94A3B8;">
+                <div style="margin-top:6px;padding-top:6px;border-top:1px solid #E2E8F0;font-style:italic;color:#64748B;">
                     ${props.description || 'Dangerous road stretch requiring heightened caution.'}
                 </div>
             </div>
@@ -606,8 +613,8 @@ function generateSafetyRoadSigns(route) {
                 <div class="popup-title">${sign.icon} ${sign.title}</div>
                 <div class="popup-detail">
                     ${sign.desc}<br>
-                    <div style="margin-top:6px;padding:6px;background:rgba(255,255,255,0.06);border-radius:4px;color:#93C5FD;">
-                        <strong>💡 Driver Advisory:</strong> ${sign.advisory}
+                    <div style="margin-top:8px;padding:8px 10px;background:#FFF7ED;border:1px solid #FED7AA;border-left:3px solid #EA580C;border-radius:6px;color:#9A3412;font-size:0.75rem;line-height:1.4;">
+                        <strong style="color:#C2410C;">💡 Driver Advisory:</strong> ${sign.advisory}
                     </div>
                 </div>
             `);
@@ -1232,9 +1239,9 @@ function updateLiveGpsMarker(lat, lng) {
         liveUserMarker = new mapboxgl.Marker({ element: markerEl, anchor: 'center' })
             .setLngLat([lng, lat])
             .setPopup(new mapboxgl.Popup({ offset: 15 }).setHTML(`
-                <div style="font-weight:700;color:#38BDF8;font-size:0.85rem;">📍 Your Live Location</div>
-                <div style="font-size:0.75rem;color:#94A3B8;margin-top:4px;">
-                    Lat: ${lat.toFixed(5)}<br>Lng: ${lng.toFixed(5)}
+                <div style="font-weight:700;color:#EA580C;font-size:0.85rem;">📍 Your Live Location</div>
+                <div style="font-size:0.75rem;color:#475569;margin-top:4px;line-height:1.4;">
+                    Lat: <strong>${lat.toFixed(5)}</strong><br>Lng: <strong>${lng.toFixed(5)}</strong>
                 </div>
             `))
             .addTo(map);
@@ -1481,11 +1488,47 @@ function showLoading(show) {
 }
 
 function clearRouteLayers() {
+    if (!map) return;
+    // Step 1: Remove all layers first to avoid MapLibre dependency crash
     routeLayers.forEach(id => {
-        if (map.getLayer(id)) map.removeLayer(id);
-        if (map.getSource(id)) map.removeSource(id);
+        try {
+            if (map.getLayer(id)) map.removeLayer(id);
+        } catch (e) {
+            console.warn('Could not remove layer:', id, e);
+        }
+    });
+    // Step 2: Remove all sources safely after layers are gone
+    routeLayers.forEach(id => {
+        try {
+            if (map.getSource(id)) map.removeSource(id);
+        } catch (e) {
+            console.warn('Could not remove source:', id, e);
+        }
     });
     routeLayers = [];
+}
+
+async function triggerSosDispatch(service) {
+    const lat = userCurrentLocation ? userCurrentLocation.lat : parseFloat(document.getElementById('origin-lat')?.value) || 21.1458;
+    const lng = userCurrentLocation ? userCurrentLocation.lng : parseFloat(document.getElementById('origin-lng')?.value) || 79.0882;
+
+    const payload = {
+        lat: lat,
+        lng: lng,
+        service: service || '112',
+        notes: `Emergency dial for ${service} from SafePass AI mobile assist.`
+    };
+
+    try {
+        await fetch('/api/supabase/sos', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        console.info(`Emergency dispatch incident logged for ${service}`);
+    } catch (e) {
+        console.warn('Could not log emergency telemetry:', e);
+    }
 }
 
 function clearOnMapPills() {

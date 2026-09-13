@@ -10,7 +10,7 @@ Supports both live Supabase cloud connection and local resilient fallback.
 
 import os
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, Any, List, Optional
 
 logger = logging.getLogger("safepass.supabase")
@@ -58,7 +58,7 @@ class SafePassSupabaseClient:
     async def save_trip(self, trip_data: Dict[str, Any]) -> Dict[str, Any]:
         """Save a computed corridor route to Supabase or local store."""
         record = {
-            "created_at": datetime.utcnow().isoformat(),
+            "created_at": datetime.now(timezone.utc).isoformat(),
             "origin_name": trip_data.get("origin_name", "Unknown Origin"),
             "origin_lat": float(trip_data.get("origin_lat", 0.0)),
             "origin_lng": float(trip_data.get("origin_lng", 0.0)),
@@ -113,7 +113,7 @@ class SafePassSupabaseClient:
     async def report_hazard(self, hazard_data: Dict[str, Any]) -> Dict[str, Any]:
         """Submit a citizen or driver hazard report along an Indian highway."""
         record = {
-            "created_at": datetime.utcnow().isoformat(),
+            "created_at": datetime.now(timezone.utc).isoformat(),
             "title": hazard_data.get("title") or "Reported Highway Hazard",
             "hazard_type": hazard_data.get("hazard_type", "blackspot"),
             "severity": float(hazard_data.get("severity", 5.0)),
@@ -162,7 +162,7 @@ class SafePassSupabaseClient:
     async def log_sos_incident(self, sos_data: Dict[str, Any]) -> Dict[str, Any]:
         """Log emergency 112 / 1033 / 108 dial with live GPS telemetry."""
         record = {
-            "created_at": datetime.utcnow().isoformat(),
+            "created_at": datetime.now(timezone.utc).isoformat(),
             "user_lat": float(sos_data.get("lat", 0.0)),
             "user_lng": float(sos_data.get("lng", 0.0)),
             "service_dialed": sos_data.get("service", "112"),
