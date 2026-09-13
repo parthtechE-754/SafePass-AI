@@ -300,9 +300,20 @@ async function analyzeRoute() {
         // Load temporal 24h chart
         loadTemporalRisk(body);
 
-        // Open route drawer
-        document.getElementById('routes-drawer').style.display = 'flex';
-        document.getElementById('routes-drawer').classList.remove('collapsed');
+        // Show route alternatives in floating search card
+        const cardRoutes = document.getElementById('card-routes-section');
+        if (cardRoutes) cardRoutes.style.display = 'flex';
+
+        // Open route bottom sheet (collapsed by default like Google Maps direction summary)
+        const drawer = document.getElementById('routes-drawer');
+        if (drawer) {
+            drawer.style.display = 'flex';
+            drawer.classList.add('collapsed');
+        }
+        const toggleBtn = document.getElementById('drawer-toggle-btn');
+        if (toggleBtn) {
+            toggleBtn.innerHTML = '<span class="toggle-arrow">▲ Details</span>';
+        }
 
     } catch (err) {
         console.warn('Route computation notice:', err);
@@ -726,6 +737,11 @@ function renderActiveRouteInsights(route) {
     const mins = route.est_time_min % 60;
     document.getElementById('distance-time').textContent = `${route.distance_km} km · ${hrs}h ${mins}m`;
 
+    const sheetRouteTitle = document.getElementById('sheet-route-name');
+    if (sheetRouteTitle && route.name) {
+        sheetRouteTitle.textContent = route.name;
+    }
+
     // Advisory
     const advisoryEl = document.getElementById('safety-advisory-text');
     if (route.avg_cri >= 7.0) {
@@ -825,7 +841,14 @@ function switchInsightTab(tabName, btn) {
 }
 
 function toggleDrawer() {
-    document.getElementById('routes-drawer').classList.toggle('collapsed');
+    const drawer = document.getElementById('routes-drawer');
+    if (!drawer) return;
+    drawer.classList.toggle('collapsed');
+    const isCollapsed = drawer.classList.contains('collapsed');
+    const toggleBtn = document.getElementById('drawer-toggle-btn');
+    if (toggleBtn) {
+        toggleBtn.innerHTML = isCollapsed ? '<span class="toggle-arrow">▲ Details</span>' : '<span class="toggle-arrow">▼ Less</span>';
+    }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════

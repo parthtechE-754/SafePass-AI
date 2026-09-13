@@ -28,69 +28,45 @@
     <link rel="stylesheet" href="/static/css/main.css?v=3.0">
 </head>
 <body class="gmaps-body">
-    <!-- ═══ APP TOP BAR ═══════════════════════════════════════════════════ -->
-    <header class="app-header gmaps-header">
-        <div class="header-left">
-            <div class="logo">
-                <div class="logo-icon">
-                    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-                        <circle cx="14" cy="14" r="12" stroke="url(#grad)" stroke-width="2.5" fill="none"/>
-                        <path d="M14 6 L14 16 M14 16 L20 12" stroke="url(#grad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        <circle cx="14" cy="14" r="3" fill="url(#grad)"/>
-                        <defs><linearGradient id="grad" x1="0" y1="0" x2="28" y2="28"><stop stop-color="#FF7A00"/><stop offset="1" stop-color="#EA580C"/></linearGradient></defs>
-                    </svg>
-                </div>
-                <span class="logo-text">SafePass<span class="logo-highlight">Maps</span></span>
-            </div>
-            <span class="header-tagline">National Highway Safety & Risk Intelligence</span>
-        </div>
-
-        <!-- Floating HUD Safety Banner -->
-        <div class="header-hud" id="header-hud">
-            <span class="hud-status-dot"></span>
-            <span class="hud-text" id="hud-text">Ready to navigate — Select corridor or enter destination</span>
-        </div>
-
-        <div class="header-right">
-            <button class="header-btn" onclick="openReportHazardModal()" title="Report Citizen Road Hazard">
-                <span>⚠️ Report</span>
-            </button>
-            <button class="header-btn" onclick="openCloudModal()" id="cloud-status-btn" title="Supabase Database Status & Trips">
-                <span id="cloud-icon">☁️</span>
-                <span id="cloud-label">Cloud</span>
-            </button>
-            <a href="/model-card" target="_blank" class="header-btn" title="SIH 2026 AI Model Card & Architecture Specifications" style="text-decoration:none;display:inline-flex;align-items:center;gap:4px;">
-                <span>🤖 Model Card</span>
-            </a>
-            <button class="header-btn voice-btn" id="voice-toggle-btn" onclick="toggleVoiceAlerts()" title="Spoken Voice Safety Warnings">
-                <span class="voice-icon" id="voice-icon">🔊</span>
-                <span class="voice-label" id="voice-label">Voice Alerts</span>
-            </button>
-            <button class="header-btn sos-btn" onclick="openSosModal()" title="Emergency 112 & NHAI 1033 Safety Assist">
-                <span class="sos-pulse"></span>
-                <span>🚨 SOS 112</span>
-            </button>
-            <div class="header-badge" id="live-status-badge">
-                <span class="live-pulse"></span>
-                <span class="badge-text" id="gps-status-text">GPS Ready</span>
-            </div>
-            <div class="header-badge" id="weather-badge">
-                <span class="badge-icon">🌤️</span>
-                <span class="badge-text" id="weather-text">--°C</span>
-            </div>
-            <a href="/dashboard" class="header-btn" title="National Heatmap & Admin Analytics">📊 Analytics</a>
-        </div>
-    </header>
-
-    <!-- ═══ FULLSCREEN MAP CANVAS ═════════════════════════════════════════ -->
+    <!-- ═══ FULLSCREEN MAP-FIRST CANVAS (100% Viewport) ═════════════════ -->
     <div class="map-viewport">
         <div id="map"></div>
 
-        <!-- ── FLOATING GOOGLE MAPS STYLE SEARCH & DIRECTIONS CARD ────────── -->
+        <!-- ── 1. FLOATING SEARCH & ROUTE CARD (Top-Left, 380px) ─────────── -->
         <div class="gmaps-floating-card" id="directions-card">
-            <!-- Travel Modes Bar -->
-            <div class="travel-modes-bar">
-                <button class="mode-btn active" data-mode="car" onclick="setTravelMode('car', this)" title="Car / Light Vehicle">
+            <!-- Brand & Status Header Inside Card -->
+            <div class="gmaps-card-brand">
+                <div class="brand-left">
+                    <div class="brand-logo-icon">
+                        <svg width="22" height="22" viewBox="0 0 28 28" fill="none">
+                            <circle cx="14" cy="14" r="12" stroke="#EA580C" stroke-width="2.5" fill="none"/>
+                            <path d="M14 6 L14 16 M14 16 L20 12" stroke="#EA580C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <circle cx="14" cy="14" r="3" fill="#EA580C"/>
+                        </svg>
+                    </div>
+                    <span class="brand-name">SafePass <span class="brand-accent">Maps</span></span>
+                </div>
+                <div class="brand-status-pills">
+                    <div class="status-pill" id="live-status-badge" title="GPS System Status">
+                        <span class="live-pulse"></span>
+                        <span id="gps-status-text">GPS Ready</span>
+                    </div>
+                    <div class="status-pill weather-pill" id="weather-badge" title="Live Weather">
+                        <span class="badge-icon">🌤️</span>
+                        <span id="weather-text">--°C</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Micro HUD status message -->
+            <div class="card-hud-strip" id="header-hud">
+                <span class="hud-status-dot"></span>
+                <span class="hud-text" id="hud-text">Ready to navigate — Select corridor or enter destination</span>
+            </div>
+
+            <!-- Travel Modes: Pill-Shaped Segmented Control -->
+            <div class="travel-modes-bar segmented-control">
+                <button class="mode-btn active" data-mode="car" onclick="setTravelMode('car', this)" title="Car">
                     <span class="mode-icon">🚗</span>
                     <span class="mode-label">Car</span>
                 </button>
@@ -98,7 +74,7 @@
                     <span class="mode-icon">🏍️</span>
                     <span class="mode-label">Bike</span>
                 </button>
-                <button class="mode-btn" data-mode="truck" onclick="setTravelMode('truck', this)" title="Heavy Commercial Truck / Freight">
+                <button class="mode-btn" data-mode="truck" onclick="setTravelMode('truck', this)" title="Heavy Commercial Truck">
                     <span class="mode-icon">🚛</span>
                     <span class="mode-label">Truck</span>
                 </button>
@@ -108,7 +84,7 @@
                 </button>
             </div>
 
-            <!-- Direction Inputs Container with GMap connector -->
+            <!-- Direction Inputs Container with Google Maps Connector -->
             <div class="gmaps-direction-inputs">
                 <div class="inputs-left-connector">
                     <div class="pin-origin-dot" title="Starting Point"></div>
@@ -124,7 +100,7 @@
                     <!-- Origin -->
                     <div class="input-field-wrapper">
                         <input type="text" id="origin-input" list="city-suggestions" class="gmap-input" placeholder="Choose starting point or live GPS..." value="Nagpur" oninput="handleCityInput('origin')">
-                        <button class="input-gps-btn" id="gps-origin-btn" onclick="useLiveGpsAsOrigin()" title="Use My Current Live GPS Location">📍 Live GPS</button>
+                        <button class="input-gps-btn" id="gps-origin-btn" onclick="useLiveGpsAsOrigin()" title="Use Current Live GPS">📍 GPS</button>
                         <button class="input-clear-btn" onclick="clearInput('origin')" title="Clear">✕</button>
                     </div>
 
@@ -139,7 +115,7 @@
 
                 <!-- Swap Button -->
                 <button class="swap-locations-btn" onclick="swapLocations()" title="Reverse origin and destination">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="17 1 21 5 17 9"></polyline>
                         <path d="M3 5h18"></path>
                         <polyline points="7 23 3 19 7 15"></polyline>
@@ -157,9 +133,8 @@
                 <input type="hidden" id="vehicle-type" value="car">
             </div>
 
-            <!-- Quick Corridor Presets Bar -->
+            <!-- Fast Corridor Presets Bar -->
             <div class="presets-scroll-bar">
-                <span class="preset-title-tag">Fast Corridors:</span>
                 <button class="preset-pill active" onclick="applyPreset('Nagpur', 'Pune', this)">Nagpur ➔ Pune</button>
                 <button class="preset-pill" onclick="applyPreset('Mumbai', 'Pune', this)">Mumbai ➔ Pune (Borghat)</button>
                 <button class="preset-pill" onclick="applyPreset('Delhi', 'Jaipur', this)">Delhi ➔ Jaipur (NH-48)</button>
@@ -167,19 +142,19 @@
                 <button class="preset-pill" onclick="applyPreset('Nagpur', 'Hyderabad', this)">Nagpur ➔ Hyderabad</button>
             </div>
 
-            <!-- Departure Time & Vehicle Settings -->
+            <!-- Departure Time & Compute Button -->
             <div class="gmap-action-row">
                 <div class="departure-time-select">
                     <span class="dep-icon">⏱️</span>
                     <select id="travel-hour" class="gmap-select" onchange="analyzeRoute()">
                         <option value="">Leave now</option>
-                        <option value="6">Depart at 6:00 AM</option>
-                        <option value="9">Depart at 9:00 AM</option>
-                        <option value="12">Depart at 12:00 PM</option>
-                        <option value="15">Depart at 3:00 PM</option>
-                        <option value="18">Depart at 6:00 PM (Dusk)</option>
-                        <option value="21">Depart at 9:00 PM (Night)</option>
-                        <option value="1">Depart at 1:00 AM (Deep Night)</option>
+                        <option value="6">Depart 6:00 AM</option>
+                        <option value="9">Depart 9:00 AM</option>
+                        <option value="12">Depart 12:00 PM</option>
+                        <option value="15">Depart 3:00 PM</option>
+                        <option value="18">Depart 6:00 PM (Dusk)</option>
+                        <option value="21">Depart 9:00 PM (Night)</option>
+                        <option value="1">Depart 1:00 AM (Deep Night)</option>
                     </select>
                 </div>
 
@@ -187,25 +162,54 @@
                     <span class="btn-icon">🛡️</span> Compute Routes
                 </button>
             </div>
-        </div>
 
-        <!-- ── FLOATING ROUTE SELECTION DRAWER (Bottom-Left) ─────────────── -->
-        <div class="gmaps-routes-drawer" id="routes-drawer" style="display:none;">
-            <div class="drawer-header" onclick="toggleDrawer()">
-                <div class="drawer-header-left">
-                    <span class="drawer-title">Route Alternatives</span>
+            <!-- Collapsible Route Alternatives Inside Card -->
+            <div class="card-routes-section" id="card-routes-section" style="display:none;">
+                <div class="section-divider"></div>
+                <div class="section-header-mini">
+                    <span class="section-title-sm">Route Alternatives</span>
                     <span class="route-count-badge" id="route-count-badge">3 options</span>
                 </div>
-                <button class="drawer-toggle-btn" id="drawer-toggle-btn">▼</button>
+                <div class="route-cards-scroll" id="route-cards-list">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ── 2. FLOATING BOTTOM ROUTE SUMMARY SHEET ─────────────────────── -->
+        <div class="gmaps-bottom-sheet collapsed" id="routes-drawer" style="display:none;">
+            <!-- Sheet Drag Handle & Collapsed Summary Row -->
+            <div class="sheet-summary-bar" onclick="toggleDrawer()">
+                <div class="sheet-handle-pill"></div>
+                <div class="sheet-bar-main">
+                    <div class="sheet-score-badge">
+                        <span class="score-val" id="safety-score">--</span>
+                        <span class="score-label">SAFETY</span>
+                    </div>
+                    <div class="sheet-meta-col">
+                        <div class="sheet-route-title" id="sheet-route-name">Recommended Safe Corridor</div>
+                        <div class="sheet-metrics-row">
+                            <span class="meta-item bold" id="distance-time">-- km · -- min</span>
+                            <span class="meta-dot">·</span>
+                            <span class="meta-item danger" id="danger-zones">-- zones</span>
+                            <span class="meta-dot">·</span>
+                            <span class="meta-item">CRI <strong id="avg-cri">--</strong></span>
+                        </div>
+                    </div>
+                    <div class="sheet-actions-group" onclick="event.stopPropagation()">
+                        <button class="sheet-preview-btn" onclick="startNavigationPreview()">
+                            <span>▶️ Preview</span>
+                        </button>
+                        <button class="sheet-expand-toggle" onclick="toggleDrawer()" title="Expand / Collapse details" id="drawer-toggle-btn">
+                            <span class="toggle-arrow">▲ Details</span>
+                        </button>
+                    </div>
+                </div>
             </div>
 
-            <!-- Route Alternatives Cards List -->
-            <div class="route-cards-scroll" id="route-cards-list">
-                <!-- Dynamically generated route cards -->
-            </div>
-
-            <!-- Active Route Quick Insights Accordion -->
-            <div class="active-route-insights" id="active-route-insights">
+            <!-- Expandable Sheet Content -->
+            <div class="sheet-expanded-content" id="active-route-insights">
+                <!-- Tabs -->
                 <div class="insights-tabs">
                     <button class="insight-tab-btn active" onclick="switchInsightTab('summary', this)">Safety Summary</button>
                     <button class="insight-tab-btn" onclick="switchInsightTab('checkpoints', this)">Road Hazards (<span id="hazard-count-tab">0</span>)</button>
@@ -214,41 +218,17 @@
 
                 <!-- Tab 1: Safety Summary -->
                 <div class="tab-pane active" id="pane-summary">
-                    <div class="summary-hero">
-                        <div class="score-ring-wrapper">
-                            <svg class="score-ring-svg" viewBox="0 0 100 100">
-                                <circle cx="50" cy="50" r="42" fill="none" stroke="#1F293D" stroke-width="8"/>
-                                <circle cx="50" cy="50" r="42" fill="none" stroke-width="8" stroke-linecap="round"
-                                    id="score-ring-progress" stroke-dasharray="264" stroke-dashoffset="264"/>
-                            </svg>
-                            <div class="score-ring-center">
-                                <span class="score-val" id="safety-score">--</span>
-                                <span class="score-lbl">Safety</span>
-                            </div>
-                        </div>
-
-                        <div class="summary-stats-col">
-                            <div class="stat-bubble">
-                                <span class="bubble-label">Corridor Risk (CRI)</span>
-                                <span class="bubble-val" id="avg-cri">--</span>
-                            </div>
-                            <div class="stat-bubble">
-                                <span class="bubble-label">High-Risk Sectors</span>
-                                <span class="bubble-val danger" id="danger-zones">--</span>
-                            </div>
-                            <div class="stat-bubble">
-                                <span class="bubble-label">Distance / Time</span>
-                                <span class="bubble-val" id="distance-time">--</span>
-                            </div>
-                        </div>
-                    </div>
-
                     <div class="safety-advisory-box" id="safety-advisory-box">
                         <span class="advisory-icon">💡</span>
                         <span class="advisory-text" id="safety-advisory-text">Analyzing corridor conditions...</span>
                     </div>
 
-                    <!-- ── TASK 1: EXPLAINABLE AI MODEL BREAKDOWN (SHAP) ──── -->
+                    <!-- Hidden SVG ring for JS score calculation compatibility -->
+                    <div style="display:none;">
+                        <circle id="score-ring-progress"></circle>
+                    </div>
+
+                    <!-- Task 1: Explainable AI (SHAP) Model Attribution -->
                     <div class="explainability-card" id="explainability-card">
                         <div class="explainability-header" onclick="toggleExplainabilityDetails()">
                             <div class="explainability-header-left">
@@ -271,12 +251,12 @@
                         </div>
                     </div>
 
-                    <div style="display:flex;gap:8px;margin-top:10px;">
+                    <div class="sheet-bottom-btns">
                         <button class="simulation-btn" onclick="startNavigationPreview()" style="flex:1;">
-                            <span class="sim-icon">▶️</span> Start Safety Preview
+                            <span>▶️ Start Safety Preview</span>
                         </button>
-                        <button class="cloud-save-btn" onclick="saveCurrentTripToCloud()" id="btn-save-cloud" title="Sync this calculated route to Supabase Database" style="background:#FFF7ED;border:1.5px solid #FFEDD5;color:#EA580C;padding:0 14px;border-radius:12px;font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px;cursor:pointer;white-space:nowrap;transition:all 0.2s;">
-                            <span>☁️ Save</span>
+                        <button class="cloud-save-btn" onclick="saveCurrentTripToCloud()" id="btn-save-cloud" title="Sync this calculated route to Supabase Database">
+                            <span>☁️ Save to Cloud</span>
                         </button>
                     </div>
                 </div>
@@ -300,11 +280,11 @@
             </div>
         </div>
 
-        <!-- ── FLOATING MAP CONTROLS (Top-Right) ────────────────────────── -->
-        <div class="gmaps-map-controls">
-            <!-- Layers Button & Dropdown -->
+        <!-- ── 3. SLIM VERTICAL ICON RAIL (Right Edge) ───────────────────── -->
+        <div class="gmaps-floating-rail">
+            <!-- Map Layers -->
             <div class="control-dropdown-container">
-                <button class="map-ctrl-btn" id="layers-btn" onclick="toggleLayersDropdown()" title="Switch Map View">
+                <button class="rail-btn" id="layers-btn" onclick="toggleLayersDropdown()" title="Switch Map View">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
                         <polyline points="2 17 12 22 22 17"></polyline>
@@ -338,24 +318,24 @@
                         <input type="checkbox" id="toggle-blackspots" checked onchange="toggleBlackspotHeatmap(this.checked)">
                     </label>
                     <label class="layer-toggle-row">
-                        <span>🛡️ Road Safety Signs & Badges</span>
+                        <span>🛡️ Road Safety Signs</span>
                         <input type="checkbox" id="toggle-safety-signs" checked onchange="toggleSafetySigns(this.checked)">
                     </label>
                     <label class="layer-toggle-row">
-                        <span>🛣️ Alternate Routes On Map</span>
+                        <span>🛣️ Alternate Routes</span>
                         <input type="checkbox" id="toggle-alt-routes" checked onchange="toggleAlternateRoutes(this.checked)">
                     </label>
                 </div>
             </div>
 
-            <!-- GPS Live Tracking Target Button -->
-            <button class="map-ctrl-btn gps-ctrl-btn" id="gps-map-toggle" onclick="toggleLiveGpsTracking()" title="Track My Live GPS Location (Radar)">
-                <span class="ctrl-icon" id="gps-ctrl-icon">🎯</span>
+            <!-- GPS Live Radar Tracker -->
+            <button class="rail-btn" id="gps-map-toggle" onclick="toggleLiveGpsTracking()" title="Track Live GPS Location">
+                <span id="gps-ctrl-icon">🎯</span>
             </button>
 
-            <!-- Recenter Corridor Button -->
-            <button class="map-ctrl-btn" onclick="recenterRoute()" title="Recenter on Corridor">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <!-- Recenter Route Corridor -->
+            <button class="rail-btn" onclick="recenterRoute()" title="Recenter Route Corridor">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="12" cy="12" r="7"></circle>
                     <polyline points="12 2 12 5"></polyline>
                     <polyline points="12 19 12 22"></polyline>
@@ -364,36 +344,77 @@
                 </svg>
             </button>
 
-            <!-- Zoom In / Out -->
-            <button class="map-ctrl-btn" onclick="map.zoomIn()" title="Zoom In">+</button>
-            <button class="map-ctrl-btn" onclick="map.zoomOut()" title="Zoom Out">−</button>
-
-            <!-- Floating SOS Button -->
-            <button class="map-ctrl-btn sos-fab-btn" onclick="openSosModal()" title="Emergency SOS 112 & Rescue Assistance">
-                <span class="ctrl-icon">🚨</span>
+            <!-- Spoken Voice Alerts -->
+            <button class="rail-btn voice-rail-btn" id="voice-toggle-btn" onclick="toggleVoiceAlerts()" title="Toggle Voice Alerts">
+                <span id="voice-icon">🔊</span>
+                <span id="voice-label" style="display:none;">Voice Alerts</span>
             </button>
+
+            <div class="rail-divider"></div>
+
+            <!-- Citizen Report Hazard -->
+            <button class="rail-btn" onclick="openReportHazardModal()" title="Report Citizen Road Hazard">
+                <span>⚠️</span>
+            </button>
+
+            <!-- Supabase Cloud Sync & Saved Trips -->
+            <button class="rail-btn" onclick="openCloudModal()" id="cloud-status-btn" title="Cloud Database & Saved Trips">
+                <span id="cloud-icon">☁️</span>
+                <span id="cloud-label" style="display:none;">Cloud</span>
+            </button>
+
+            <!-- SIH 2026 Model Card -->
+            <a href="/model-card" target="_blank" class="rail-btn" title="SIH 2026 AI Model Card" style="text-decoration:none;">
+                <span>🤖</span>
+            </a>
+
+            <!-- National Heatmap & Admin Dashboard -->
+            <a href="/dashboard" class="rail-btn" title="National Heatmap & Admin Analytics" style="text-decoration:none;">
+                <span>📊</span>
+            </a>
+
+            <!-- Safety Signs Legend Toggle -->
+            <button class="rail-btn" onclick="toggleLegend()" title="Safety Signs Legend">
+                <span>ℹ️</span>
+            </button>
+
+            <div class="rail-divider"></div>
+
+            <!-- Zoom Controls -->
+            <button class="rail-btn zoom-btn" onclick="map.zoomIn()" title="Zoom In">+</button>
+            <button class="rail-btn zoom-btn" onclick="map.zoomOut()" title="Zoom Out">−</button>
         </div>
 
-        <!-- ── FLOATING SAFETY SIGNS LEGEND (Bottom-Right) ──────────────── -->
-        <div class="gmaps-floating-legend">
+        <!-- ── 4. CIRCULAR RED SOS 112 FAB (Bottom-Right) ────────────────── -->
+        <button class="gmaps-sos-fab" id="sos-fab-main" onclick="openSosModal()" title="Emergency SOS 112 & NHAI 1033 Assist">
+            <span class="sos-fab-halo"></span>
+            <span class="sos-fab-icon">🚨</span>
+            <span class="sos-fab-text">SOS</span>
+        </button>
+
+        <!-- ── 5. COLLAPSIBLE SAFETY SIGNS LEGEND (Bottom-Right Widget) ──── -->
+        <div class="gmaps-floating-legend collapsed" id="legend-widget">
             <div class="legend-header" onclick="toggleLegend()">
-                <span>Safety Signs & Corridor Risk</span>
+                <div class="legend-header-left">
+                    <span class="legend-dot"></span>
+                    <span class="legend-title">Corridor Risk Legend</span>
+                </div>
                 <span id="legend-caret">▲</span>
             </div>
             <div class="legend-content" id="legend-content">
                 <div class="legend-scale-bar">
-                    <div class="scale-segment low">Low (0-4)</div>
-                    <div class="scale-segment mod">Mod (4-6)</div>
-                    <div class="scale-segment high">High (6-8)</div>
-                    <div class="scale-segment crit">Critical (8+)</div>
+                    <div class="scale-segment low">0-4 Low</div>
+                    <div class="scale-segment mod">4-6 Mod</div>
+                    <div class="scale-segment high">6-8 High</div>
+                    <div class="scale-segment crit">8+ Crit</div>
                 </div>
                 <div class="legend-signs-grid">
                     <div class="legend-sign-item"><span class="sign-emoji">⚠️</span> MoRTH Blackspot</div>
                     <div class="legend-sign-item"><span class="sign-emoji">⛰️</span> Hairpin / Ghat</div>
-                    <div class="legend-sign-item"><span class="sign-emoji">🌫️</span> Fog / Low Visibility</div>
-                    <div class="legend-sign-item"><span class="sign-emoji">🌧️</span> Monsoon Waterlogging</div>
-                    <div class="legend-sign-item"><span class="sign-emoji">💡</span> Unlit Highway Stretch</div>
-                    <div class="legend-sign-item"><span class="sign-emoji">🛡️</span> NHAI 24x7 Safe Haven</div>
+                    <div class="legend-sign-item"><span class="sign-emoji">🌫️</span> Dense Fog</div>
+                    <div class="legend-sign-item"><span class="sign-emoji">🌧️</span> Waterlogging</div>
+                    <div class="legend-sign-item"><span class="sign-emoji">💡</span> Unlit Highway</div>
+                    <div class="legend-sign-item"><span class="sign-emoji">🛡️</span> NHAI Safe Haven</div>
                 </div>
             </div>
         </div>
