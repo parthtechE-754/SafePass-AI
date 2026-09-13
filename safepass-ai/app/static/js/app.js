@@ -1836,6 +1836,7 @@ function setupHazardNlpListeners() {
                 });
                 if (!res.ok) return;
                 const data = await res.json();
+                if (data && data.suggested_category) {
                     // 1. Auto-select category (editable by user)
                     selectHazardCategory(data.suggested_category);
 
