@@ -143,9 +143,8 @@ html, body {
     padding: 16px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    overflow-y: auto;
-    overscroll-behavior: contain;
+    gap: 10px;
+    overflow: hidden;
 }
 
 /* Slim scrollbar for left panel */
@@ -494,12 +493,16 @@ html, body {
 .card-routes-section {
     display: flex;
     flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
 }
 
 .section-divider {
     height: 1px;
     background: var(--border-subtle);
-    margin: 6px 0 10px 0;
+    margin: 4px 0 8px 0;
+    flex-shrink: 0;
 }
 
 .section-header-mini {
@@ -507,6 +510,7 @@ html, body {
     align-items: center;
     justify-content: space-between;
     margin-bottom: 8px;
+    flex-shrink: 0;
 }
 
 .section-title-sm {
@@ -531,6 +535,11 @@ html, body {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-right: 2px;
 }
 
 .route-option-card {
@@ -618,115 +627,248 @@ html, body {
     border-radius: 6px;
 }
 
-/* ── Inline Selected Route Intelligence Details ────────────────────────── */
-.inline-route-details {
+/* ── 1. Compact Route Alternatives Chip Strip (Pinned at Top) ───────────── */
+.route-chips-container {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    margin-top: 4px;
+    gap: 6px;
+    padding-bottom: 6px;
+    background: var(--surface-white);
+    flex-shrink: 0;
 }
 
-.details-divider {
-    height: 1px;
-    background: var(--border-subtle);
-    margin: 8px 0;
+.route-chips-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
-.selected-route-banner {
+.chips-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+}
+
+.route-chips-scroll {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding: 2px 2px 6px 2px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+.route-chips-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.route-chip-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: var(--surface-canvas);
+    border: 1.5px solid var(--border-subtle);
+    border-radius: var(--radius-pill);
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+}
+
+.route-chip-btn:hover {
+    background: var(--surface-tonal);
+    color: var(--text-primary);
+    border-color: #BDC1C6;
+}
+
+.route-chip-btn.active {
+    background: var(--accent-tint);
+    border-color: var(--accent-brand);
+    color: var(--accent-brand);
+    font-weight: 700;
+    box-shadow: 0 1px 4px rgba(234, 88, 12, 0.18);
+}
+
+.chip-score-badge {
+    font-size: 10.5px;
+    font-weight: 800;
+    padding: 1px 6px;
+    border-radius: 4px;
+}
+
+/* ── 2. Sticky Single Summary Row (Merged Score + Title + Distance/Time/CRI) ─ */
+.sticky-summary-row {
+    background: var(--surface-white);
+    padding: 10px 0;
+    border-top: 1px solid var(--border-subtle);
+    border-bottom: 1px solid var(--border-subtle);
+    margin-bottom: 8px;
+    flex-shrink: 0;
+}
+
+.sticky-summary-content {
     display: flex;
     align-items: center;
     gap: 12px;
-    background: var(--surface-canvas);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-md);
-    padding: 10px 12px;
 }
 
-.banner-score-col {
+.sticky-score-badge {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-width: 52px;
-    background: var(--surface-white);
-    border-radius: var(--radius-sm);
-    padding: 6px 4px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    min-width: 50px;
+    height: 50px;
+    border-radius: var(--radius-md);
+    background: var(--safety-green-bg);
+    border: 1.5px solid rgba(19, 115, 51, 0.25);
+    flex-shrink: 0;
 }
 
-.safety-score-number {
-    font-size: 22px;
+.sticky-score-badge .score-number {
+    font-size: 21px;
     font-weight: 800;
-    color: var(--safety-green);
     line-height: 1;
+    color: var(--safety-green);
 }
 
-.safety-score-label {
-    font-size: 8.5px;
+.sticky-score-badge .score-sub {
+    font-size: 8px;
     font-weight: 800;
-    color: var(--text-tertiary);
     letter-spacing: 0.5px;
+    color: var(--text-tertiary);
     margin-top: 2px;
 }
 
-.banner-info-col {
+.sticky-meta-col {
     flex: 1;
     display: flex;
     flex-direction: column;
     gap: 3px;
+    min-width: 0;
 }
 
-.banner-route-name {
-    font-size: 13.5px;
+.sticky-route-title {
+    font-size: 14px;
     font-weight: 700;
     color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.banner-meta-row {
+.sticky-metrics-line {
     font-size: 11.5px;
     font-weight: 500;
     color: var(--text-secondary);
     display: flex;
     align-items: center;
     gap: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.meta-dist {
-    font-weight: 700;
-    color: var(--text-primary);
-}
-
-.meta-danger {
+.sticky-metrics-line .danger-text {
     color: var(--safety-orange);
     font-weight: 600;
 }
 
-.meta-dot {
+.sticky-metrics-line .meta-dot {
     color: var(--text-tertiary);
 }
 
-.inline-actions-row {
+/* ── Sticky Action CTAs (Dominant Filled Orange + Secondary Outlined) ───── */
+.sticky-actions-row {
     display: flex;
     gap: 8px;
+    padding-bottom: 8px;
+    background: var(--surface-white);
+    flex-shrink: 0;
 }
 
 .inline-drive-btn {
     flex: 1;
-    height: 38px;
+    height: 40px;
     font-size: 13px;
+    font-weight: 700;
+    background: #EA580C;
+    color: #FFFFFF;
+    border: none;
+    border-radius: var(--radius-md);
+    box-shadow: 0 1px 3px rgba(234, 88, 12, 0.35);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.15s ease;
 }
 
-.inline-cloud-btn {
-    height: 38px;
-    padding: 0 14px;
-    font-size: 12px;
+.inline-drive-btn:hover {
+    background: #C2410C;
+    box-shadow: 0 2px 6px rgba(234, 88, 12, 0.45);
+    transform: translateY(-1px);
 }
 
-/* Tabs inside Inline Details */
-.insights-tabs {
+.btn-secondary-outlined {
+    height: 40px;
+    padding: 0 16px;
+    font-size: 12.5px;
+    font-weight: 600;
+    background: #FFFFFF;
+    color: #EA580C;
+    border: 1.5px solid #EA580C;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    transition: all 0.15s ease;
+}
+
+.btn-secondary-outlined:hover {
+    background: #FFF7ED;
+    border-color: #C2410C;
+    color: #C2410C;
+    transform: translateY(-1px);
+}
+
+/* ── 3. Sticky Tab Bar & Scrollable Content ─────────────────────────────── */
+.sticky-tab-bar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
     display: flex;
     border-bottom: 1px solid var(--border-subtle);
     gap: 4px;
+    background: var(--surface-white);
+    padding-top: 2px;
+    flex-shrink: 0;
+}
+
+.tab-content-scrollable {
+    flex: 1;
+    min-height: 0;
+    max-height: 380px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-right: 4px;
+}
+
+.tab-content-scrollable::-webkit-scrollbar {
+    width: 4px;
+}
+.tab-content-scrollable::-webkit-scrollbar-thumb {
+    background: var(--border-strong);
+    border-radius: 4px;
 }
 
 .insight-tab-btn {
@@ -739,6 +881,7 @@ html, body {
     cursor: pointer;
     border-bottom: 2px solid transparent;
     transition: all 0.15s ease;
+    white-space: nowrap;
 }
 
 .insight-tab-btn:hover {
@@ -748,6 +891,7 @@ html, body {
 .insight-tab-btn.active {
     color: var(--accent-brand);
     border-bottom-color: var(--accent-brand);
+    font-weight: 700;
 }
 
 .safety-advisory-box {
@@ -827,68 +971,93 @@ html, body {
     background: var(--surface-white);
 }
 
-.explainability-meta-row {
+.explainability-model-caption {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    font-size: 11px;
-}
-
-.ml-model-name-tag {
+    gap: 6px;
+    font-size: 10.5px;
     color: var(--text-secondary);
-    font-weight: 600;
+    background: var(--surface-canvas);
+    padding: 6px 10px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-subtle);
+    margin-bottom: 8px;
+    flex-wrap: wrap;
 }
 
-.ml-badge-metric {
-    font-weight: 700;
-    color: var(--safety-green);
-    background: var(--safety-green-bg);
-    padding: 2px 6px;
-    border-radius: 4px;
+.model-caption-item strong {
+    color: var(--text-primary);
 }
 
-.factors-list {
+.caption-dot {
+    color: var(--text-tertiary);
+}
+
+.shap-factors-list {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 8px;
+    margin-bottom: 8px;
 }
 
-.factor-item {
+.shap-factor-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 10px;
     font-size: 11.5px;
 }
 
-.factor-label {
-    color: var(--text-secondary);
-}
-
-.factor-bar-wrapper {
+.shap-factor-label {
     display: flex;
     align-items: center;
-    gap: 6px;
-    width: 140px;
+    gap: 7px;
+    min-width: 0;
+    flex: 1;
 }
 
-.factor-bar-track {
+.shap-factor-icon {
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.shap-factor-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.shap-factor-bar-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 140px;
+    flex-shrink: 0;
+}
+
+.shap-bar-track {
     flex: 1;
-    height: 6px;
+    height: 7px;
     background: var(--surface-tonal);
-    border-radius: 3px;
+    border-radius: 4px;
     overflow: hidden;
 }
 
-.factor-bar-fill {
+.shap-bar-fill {
     height: 100%;
-    border-radius: 3px;
+    border-radius: 4px;
+    transition: width 0.3s ease;
 }
 
-.factor-val {
-    font-size: 10.5px;
+.shap-value {
+    font-size: 11px;
     font-weight: 700;
-    width: 32px;
+    color: var(--text-primary);
+    width: 38px;
     text-align: right;
+    font-variant-numeric: tabular-nums;
 }
 
 .explainability-footer {
@@ -985,8 +1154,10 @@ html, body {
 }
 
 .rail-btn.active {
-    background: var(--accent-tint);
+    background: #FFF7ED;
     color: var(--accent-brand);
+    border: 1.5px solid var(--accent-brand);
+    box-shadow: 0 1px 4px rgba(234, 88, 12, 0.2);
 }
 
 .rail-divider {
@@ -1154,6 +1325,8 @@ html, body {
 
 .gmaps-floating-legend.collapsed {
     width: auto;
+    border-radius: var(--radius-pill);
+    box-shadow: var(--elevation-1);
 }
 
 .legend-header {
@@ -1167,6 +1340,12 @@ html, body {
     background: var(--surface-white);
     cursor: pointer;
     gap: 8px;
+    transition: background 0.15s ease;
+}
+
+.gmaps-floating-legend.collapsed .legend-header {
+    padding: 7px 14px;
+    border-radius: var(--radius-pill);
 }
 
 .legend-header:hover {
@@ -2013,12 +2192,13 @@ html, body {
     to { transform: rotate(360deg); }
 }
 
-/* Single On-Map Route ETA & Safety Pill (Google Maps Standard) */
+/* Single On-Map Route ETA & Safety Pill (Anchored with Caret Pointer) */
 .onmap-route-pill {
+    position: relative;
     padding: 6px 12px;
     background: rgba(32, 33, 36, 0.95);
     backdrop-filter: blur(8px);
-    border: 1.5px solid #FFFFFF;
+    border: 1.5px solid rgba(255, 255, 255, 0.35);
     border-radius: var(--radius-pill);
     color: #FFFFFF;
     font-size: 11.5px;
@@ -2029,16 +2209,34 @@ html, body {
     align-items: center;
     gap: 6px;
     white-space: nowrap;
-    transition: transform 0.15s ease;
+    transition: transform 0.15s ease, background 0.15s ease;
 }
 
 .onmap-route-pill:hover {
-    transform: scale(1.08);
+    transform: translateY(-2px) scale(1.05);
 }
 
 .onmap-route-pill.active {
-    background: #1E293B;
+    background: #0F172A;
     border-color: var(--accent-brand);
+}
+
+/* Downward Caret Pointer Connecting Tooltip Directly to Route Line */
+.onmap-route-pill::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid rgba(32, 33, 36, 0.95);
+}
+
+.onmap-route-pill.active::after {
+    border-top-color: #0F172A;
 }
 
 /* Safety Road Signs Markers */

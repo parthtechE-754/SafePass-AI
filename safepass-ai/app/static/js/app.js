@@ -278,8 +278,9 @@ async function analyzeRoute() {
             throw new Error('No routes returned from route engine');
         }
 
-        // Pick the safest route as active initially
+        // Default state: no route selected yet, show full-size alternative cards
         activeRouteIndex = 0;
+        isRouteSelected = false;
 
         // Render all routes simultaneously onto the map (Google Maps style)
         renderMultiRoutesOnMap(allRoutesData, activeRouteIndex);
@@ -475,18 +476,26 @@ function renderMultiRoutesOnMap(routes, activeIdx) {
             map.on('click', altHitboxId, () => {
                 selectRoute(idx);
             });
-            map.on('mouseenter', altHitboxId, () => { map.getCanvas().style.cursor = 'pointer'; });
-            map.on('mouseleave', altHitboxId, () => { map.getCanvas().style.cursor = ''; });
+            map.on('mouseenter', altHitboxId, () => {
+                map.getCanvas().style.cursor = 'pointer';
+                showRouteTooltip(route, idx, false);
+            });
+            map.on('mouseleave', altHitboxId, () => {
+                map.getCanvas().style.cursor = '';
+                const cur = routes[activeRouteIndex];
+                if (cur) {
+                    showRouteTooltip(cur, activeRouteIndex, true);
+                }
+            });
 
             routeLayers.push(altSrcId, altCasingId, altLayerId, altHitboxId);
         }
     });
 
-    // Place single collision-aware ETA & Risk Pill on active route
+    // Place single anchored tooltip with downward caret on active route
     const activeRoute = routes[activeIdx];
-    if (activeRoute && activeRoute.route_points && activeRoute.route_points.length > 0) {
-        const midPoint = activeRoute.route_points[Math.floor(activeRoute.route_points.length / 2)];
-        createOnMapRoutePill(activeRoute, activeIdx, true, midPoint);
+    if (activeRoute) {
+        showRouteTooltip(activeRoute, activeIdx, true);
     }
 
     // Add origin and destination Google Maps style markers
@@ -495,9 +504,18 @@ function renderMultiRoutesOnMap(routes, activeIdx) {
     map.fitBounds(bounds, { padding: { top: 90, bottom: 90, left: 440, right: 120 }, duration: 1200 });
 }
 
-function createOnMapRoutePill(route, index, isActive, midPoint) {
+let activeRouteTooltipMarker = null;
+
+function showRouteTooltip(route, index, isActive) {
+    if (activeRouteTooltipMarker) {
+        activeRouteTooltipMarker.remove();
+        activeRouteTooltipMarker = null;
+    }
+    if (!route || !route.route_points || route.route_points.length === 0) return;
+
+    const midPoint = route.route_points[Math.floor(route.route_points.length / 2)];
     const pillEl = document.createElement('div');
-    pillEl.className = `onmap-route-pill ${isActive ? 'active' : 'alternate'} ${route.avg_cri >= 6.5 ? 'danger-route' : ''}`;
+    pillEl.className = `onmap-route-pill ${isActive ? 'active' : 'preview'} ${route.avg_cri >= 6.5 ? 'danger-route' : ''}`;
 
     const hrs = Math.floor(route.est_time_min / 60);
     const mins = route.est_time_min % 60;
@@ -516,11 +534,19 @@ function createOnMapRoutePill(route, index, isActive, midPoint) {
         selectRoute(index);
     };
 
-    const marker = new mapboxgl.Marker({ element: pillEl, anchor: 'center' })
-        .setLngLat([midPoint.lng, midPoint.lat])
-        .addTo(map);
+    activeRouteTooltipMarker = new mapboxgl.Marker({ 
+        element: pillEl, 
+        anchor: 'bottom',
+        offset: [0, -6] 
+    })
+    .setLngLat([midPoint.lng, midPoint.lat])
+    .addTo(map);
 
-    onMapRoutePills.push(marker);
+    onMapRoutePills.push(activeRouteTooltipMarker);
+}
+
+function createOnMapRoutePill(route, index, isActive, midPoint) {
+    showRouteTooltip(route, index, isActive);
 }
 
 function addOriginDestMarkers(originPt, destPt) {
@@ -664,112 +690,227 @@ function generateSafetyRoadSigns(route) {
 // ROUTE SELECTION & DRAWER LOGIC
 // ═══════════════════════════════════════════════════════════════════════════
 
+let isRouteSelected = false;
+
 function selectRoute(index) {
-    if (index === activeRouteIndex || !allRoutesData[index]) return;
+    if (!allRoutesData || !allRoutesData[index]) return;
+    
+    // Mark as selected
+    isRouteSelected = true;
     activeRouteIndex = index;
 
-    // Re-render multi-routes with newly selected route
+    // Fast swap: update chip active classes without full reload flicker
+    const chipsStrip = document.getElementById('route-chips-strip');
+    const cardsListEl = document.getElementById('route-cards-list');
+    const chipsContainer = document.getElementById('route-chips-container');
+    const summaryRow = document.getElementById('sticky-summary-row');
+    const actionsRow = document.querySelector('.sticky-actions-row');
+    const tabTabBar = document.getElementById('sticky-tab-bar');
+    const tabScrollable = document.getElementById('tab-content-scrollable');
+
+    if (cardsListEl) cardsListEl.style.display = 'none';
+    if (chipsContainer) chipsContainer.style.display = 'flex';
+    if (summaryRow) summaryRow.style.display = 'block';
+    if (actionsRow) actionsRow.style.display = 'flex';
+    if (tabTabBar) tabTabBar.style.display = 'flex';
+    if (tabScrollable) tabScrollable.style.display = 'block';
+
+    if (chipsStrip && chipsStrip.children.length === allRoutesData.length) {
+        Array.from(chipsStrip.children).forEach((ch, idx) => {
+            if (idx === index) {
+                ch.classList.add('active');
+            } else {
+                ch.classList.remove('active');
+            }
+        });
+    } else {
+        renderRouteOptionCards(allRoutesData, activeRouteIndex);
+    }
+
+    // Re-render multi-routes with newly selected route & anchored caret tooltip
     renderMultiRoutesOnMap(allRoutesData, activeRouteIndex);
-    renderRouteOptionCards(allRoutesData, activeRouteIndex);
     renderActiveRouteInsights(allRoutesData[activeRouteIndex]);
     generateSafetyRoadSigns(allRoutesData[activeRouteIndex]);
     updateTopHud(allRoutesData[activeRouteIndex]);
 }
 
+function uncollapseRouteCards() {
+    isRouteSelected = false;
+    renderRouteOptionCards(allRoutesData, activeRouteIndex);
+}
+
 function renderRouteOptionCards(routes, activeIdx) {
     const listEl = document.getElementById('route-cards-list');
-    listEl.innerHTML = '';
+    const chipsContainer = document.getElementById('route-chips-container');
+    const chipsStrip = document.getElementById('route-chips-strip');
+    const summaryRow = document.getElementById('sticky-summary-row');
+    const actionsRow = document.querySelector('.sticky-actions-row');
+    const tabTabBar = document.getElementById('sticky-tab-bar');
+    const tabScrollable = document.getElementById('tab-content-scrollable');
+    const countBadge = document.getElementById('route-count-badge');
 
-    document.getElementById('route-count-badge').textContent = `${routes.length} options`;
+    if (countBadge) {
+        countBadge.textContent = `${routes.length} options`;
+    }
 
-    routes.forEach((route, idx) => {
-        const isActive = (idx === activeIdx);
-        const hrs = Math.floor(route.est_time_min / 60);
-        const mins = route.est_time_min % 60;
-        const timeStr = `${hrs}h ${mins}m`;
+    if (!isRouteSelected) {
+        // DEFAULT STATE (no route selected yet):
+        // Show full-size cards for all alternatives
+        if (listEl) listEl.style.display = 'flex';
+        if (chipsContainer) chipsContainer.style.display = 'none';
+        if (summaryRow) summaryRow.style.display = 'none';
+        if (actionsRow) actionsRow.style.display = 'none';
+        if (tabTabBar) tabTabBar.style.display = 'none';
+        if (tabScrollable) tabScrollable.style.display = 'none';
 
-        const isSafest = (idx === 0);
-        const isDangerous = (route.avg_cri >= 6.0);
+        if (listEl) {
+            listEl.innerHTML = '';
+            routes.forEach((route, idx) => {
+                const hrs = Math.floor(route.est_time_min / 60);
+                const mins = route.est_time_min % 60;
+                const timeStr = `${hrs}h ${mins}m`;
 
-        let badgeHtml = '';
-        if (isSafest) {
-            badgeHtml = `<span class="route-card-badge safest">🛡️ Safest</span>`;
-        } else if (isDangerous) {
-            badgeHtml = `<span class="route-card-badge caution">⚠️ High Risk</span>`;
-        } else {
-            badgeHtml = `<span class="route-card-badge alt">Alternative</span>`;
+                const isSafest = (idx === 0);
+                const isDangerous = (route.avg_cri >= 6.0);
+
+                let badgeHtml = '';
+                if (isSafest) {
+                    badgeHtml = `<span class="route-card-badge safest">🛡️ Recommended</span>`;
+                } else if (isDangerous) {
+                    badgeHtml = `<span class="route-card-badge caution">⚠️ High Risk</span>`;
+                } else {
+                    badgeHtml = `<span class="route-card-badge alt">Alternative</span>`;
+                }
+
+                const scoreColor = route.safety_score >= 7.5 ? '#137333' : route.safety_score >= 5.5 ? '#F9AB00' : '#D93025';
+                const scoreBg = route.safety_score >= 7.5 ? '#E6F4EA' : route.safety_score >= 5.5 ? '#FEF7E0' : '#FCE8E6';
+
+                const card = document.createElement('div');
+                card.className = `route-option-card`;
+                card.onclick = () => selectRoute(idx);
+
+                card.innerHTML = `
+                    <div class="route-card-left">
+                        <div class="route-card-title-row">
+                            <span class="route-card-name">${route.name}</span>
+                            ${badgeHtml}
+                        </div>
+                        <div class="route-card-metrics">
+                            <span class="route-card-time">${timeStr}</span>
+                            <span>·</span>
+                            <span>${route.distance_km} km</span>
+                            <span>·</span>
+                            <span>${route.danger_zones} hazard spots</span>
+                        </div>
+                    </div>
+                    <div class="route-card-right">
+                        <span class="route-card-safety-score" style="background:${scoreBg};color:${scoreColor};border:1px solid ${scoreColor}40;">
+                            ${route.safety_score}/10 Safety
+                        </span>
+                    </div>
+                `;
+                listEl.appendChild(card);
+            });
         }
+    } else {
+        // SELECTED STATE:
+        // Collapse all into a single horizontal scrollable strip of small chips
+        if (listEl) listEl.style.display = 'none';
+        if (chipsContainer) chipsContainer.style.display = 'flex';
+        if (summaryRow) summaryRow.style.display = 'block';
+        if (actionsRow) actionsRow.style.display = 'flex';
+        if (tabTabBar) tabTabBar.style.display = 'flex';
+        if (tabScrollable) tabScrollable.style.display = 'block';
 
-        const scoreColor = route.safety_score >= 7.5 ? '#22C55E' : route.safety_score >= 5.5 ? '#EAB308' : '#DC2626';
+        if (chipsStrip) {
+            chipsStrip.innerHTML = '';
+            routes.forEach((route, idx) => {
+                const isActive = (idx === activeIdx);
+                const scoreColor = route.safety_score >= 7.5 ? '#137333' : route.safety_score >= 5.5 ? '#B06000' : '#D93025';
+                const scoreBg = route.safety_score >= 7.5 ? '#E6F4EA' : route.safety_score >= 5.5 ? '#FEF7E0' : '#FCE8E6';
 
-        const card = document.createElement('div');
-        card.className = `route-option-card ${isActive ? 'active' : ''}`;
-        card.onclick = () => selectRoute(idx);
+                let displayName = route.name;
+                if (idx === 0 && !displayName.includes('Recommended')) {
+                    displayName = 'Recommended';
+                }
 
-        card.innerHTML = `
-            <div class="route-card-left">
-                <div class="route-card-title-row">
-                    <span class="route-card-name">${route.name}</span>
-                    ${badgeHtml}
-                </div>
-                <div class="route-card-metrics">
-                    <span class="route-card-time">${timeStr}</span>
-                    <span>·</span>
-                    <span>${route.distance_km} km</span>
-                    <span>·</span>
-                    <span>${route.danger_zones} hazard spots</span>
-                </div>
-            </div>
-            <div class="route-card-right">
-                <span class="route-card-safety-score" style="background:${scoreColor}20;color:${scoreColor};border:1px solid ${scoreColor}50;">
-                    ${route.safety_score}/10 Safety
-                </span>
-            </div>
-        `;
-
-        listEl.appendChild(card);
-    });
+                const chip = document.createElement('button');
+                chip.className = `route-chip-btn ${isActive ? 'active' : ''}`;
+                chip.onclick = () => selectRoute(idx);
+                chip.innerHTML = `
+                    <span class="chip-name">${displayName}</span>
+                    <span class="chip-score-badge" style="background:${scoreBg};color:${scoreColor};">
+                        · ${route.safety_score}
+                    </span>
+                `;
+                chipsStrip.appendChild(chip);
+            });
+        }
+    }
 }
 
 function renderActiveRouteInsights(route) {
-    // Safety score ring
+    if (!route) return;
+
+    // 1. Safety Score Pill in Sticky Summary Row
     const scoreVal = document.getElementById('safety-score');
-    scoreVal.textContent = route.safety_score;
-    const scoreColor = route.safety_score >= 7.5 ? '#22C55E' : route.safety_score >= 5.5 ? '#EAB308' : '#DC2626';
-    scoreVal.style.color = scoreColor;
+    if (scoreVal) {
+        scoreVal.textContent = route.safety_score;
+        const scoreColor = route.safety_score >= 7.5 ? '#137333' : route.safety_score >= 5.5 ? '#F9AB00' : '#D93025';
+        const scoreBg = route.safety_score >= 7.5 ? '#E6F4EA' : route.safety_score >= 5.5 ? '#FEF7E0' : '#FCE8E6';
+        scoreVal.style.color = scoreColor;
+        const pill = document.getElementById('safety-score-pill');
+        if (pill) {
+            pill.style.background = scoreBg;
+            pill.style.borderColor = `${scoreColor}40`;
+        }
+    }
 
     const circle = document.getElementById('score-ring-progress');
-    const radius = 42;
-    const circumference = 2 * Math.PI * radius;
-    const progress = (route.safety_score / 10) * circumference;
-    circle.style.strokeDasharray = `${circumference}`;
-    circle.style.strokeDashoffset = `${circumference - progress}`;
-    circle.style.stroke = scoreColor;
+    if (circle) {
+        const radius = 42;
+        const circumference = 2 * Math.PI * radius;
+        const progress = (route.safety_score / 10) * circumference;
+        circle.style.strokeDasharray = `${circumference}`;
+        circle.style.strokeDashoffset = `${circumference - progress}`;
+    }
 
-    // Stats
-    document.getElementById('avg-cri').textContent = `${route.avg_cri}/10`;
-    document.getElementById('danger-zones').textContent = `${route.danger_zones} zones`;
-
-    const hrs = Math.floor(route.est_time_min / 60);
-    const mins = route.est_time_min % 60;
-    document.getElementById('distance-time').textContent = `${route.distance_km} km · ${hrs}h ${mins}m`;
-
+    // 2. Merged Sticky Summary Metadata
     const sheetRouteTitle = document.getElementById('sheet-route-name');
-    if (sheetRouteTitle && route.name) {
-        sheetRouteTitle.textContent = route.name;
+    if (sheetRouteTitle) {
+        sheetRouteTitle.textContent = route.name || 'Recommended Corridor';
     }
 
-    // Advisory
+    const distTimeEl = document.getElementById('distance-time');
+    if (distTimeEl) {
+        const hrs = Math.floor(route.est_time_min / 60);
+        const mins = route.est_time_min % 60;
+        distTimeEl.textContent = `${route.distance_km} km · ${hrs}h ${mins}m`;
+    }
+
+    const dangerEl = document.getElementById('danger-zones');
+    if (dangerEl) {
+        dangerEl.textContent = `${route.danger_zones} hazard spots`;
+    }
+
+    const criEl = document.getElementById('avg-cri');
+    if (criEl) {
+        criEl.textContent = `${route.avg_cri}/10`;
+    }
+
+    // 3. Safety Advisory
     const advisoryEl = document.getElementById('safety-advisory-text');
-    if (route.avg_cri >= 7.0) {
-        advisoryEl.textContent = '⛔ HIGH RISK CORRIDOR: Multiple accident blackspots and undivided sectors. Extreme caution advised, avoid night driving.';
-    } else if (route.avg_cri >= 5.0) {
-        advisoryEl.textContent = '⚠️ MODERATE HAZARD: Exercise normal caution. Keep headlight beam calibrated and maintain safe distance on curves.';
-    } else {
-        advisoryEl.textContent = '✅ OPTIMAL SAFETY CORRIDOR: Excellent infrastructure, median separation, and minimal documented blackspots.';
+    if (advisoryEl) {
+        if (route.avg_cri >= 7.0) {
+            advisoryEl.textContent = '⛔ HIGH RISK CORRIDOR: Multiple accident blackspots and undivided sectors. Extreme caution advised, avoid night driving.';
+        } else if (route.avg_cri >= 5.0) {
+            advisoryEl.textContent = '⚠️ MODERATE HAZARD: Exercise normal caution. Keep headlight beam calibrated and maintain safe distance on curves.';
+        } else {
+            advisoryEl.textContent = '✅ OPTIMAL SAFETY CORRIDOR: Excellent infrastructure, median separation, and minimal documented blackspots.';
+        }
     }
 
-    // Task 1: Render Explainable AI (SHAP) Model Attribution
+    // 4. Redesigned AI/SHAP Factors
     renderExplainabilityFactors(route);
 }
 
@@ -780,34 +921,66 @@ function renderExplainabilityFactors(route) {
     if (!card || !container) return;
 
     if (modelTag) {
-        modelTag.textContent = route.ml_model || 'Gradient Boosting (MoRTH Trained)';
+        modelTag.textContent = route.ml_model || 'GradientBoostingRegressor';
     }
 
     container.innerHTML = '';
-    const factors = (route.top_factors && route.top_factors.length > 0) 
-        ? route.top_factors 
+    
+    // Standardize factors list
+    let factors = (route.top_factors && route.top_factors.length > 0) 
+        ? JSON.parse(JSON.stringify(route.top_factors))
         : [
-            { factor: 'weather_visibility', title: 'Adverse Weather / Visibility', percentage: 38.5, icon: '🌫️', explanation: 'Primary contributor based on real-time atmospheric readings.' },
-            { factor: 'accident_history', title: 'Corridor Crash History', percentage: 28.0, icon: '⚠️', explanation: 'Proximity to documented MoRTH highway blackspots.' },
-            { factor: 'time_of_day', title: 'Time of Day Exposure', percentage: 21.5, icon: '🌙', explanation: 'Temporal fatality multiplier for nocturnal travel.' },
-            { factor: 'traffic_density', title: 'Traffic Density Differential', percentage: 12.0, icon: '🚗', explanation: 'Speed divergence and corridor congestion.' }
+            { factor: 'weather_visibility', title: 'Weather & Sight Distance', percentage: 38.5, icon: '🌫️' },
+            { factor: 'accident_history', title: 'Historical Accident Proximity', percentage: 28.0, icon: '⚠️' },
+            { factor: 'time_of_day', title: 'Time of Day', percentage: 21.5, icon: '🌙' },
+            { factor: 'road_type', title: 'Road Type', percentage: 12.0, icon: '🛣️' }
         ];
 
+    const iconMap = {
+        'weather_visibility': '🌫️',
+        'weather': '🌫️',
+        'accident_history': '⚠️',
+        'accidents': '⚠️',
+        'time_of_day': '🌙',
+        'time': '🌙',
+        'road_type': '🛣️',
+        'traffic_density': '🚗',
+        'traffic': '🚗'
+    };
+
+    const titleMap = {
+        'weather_visibility': 'Weather & Sight Distance',
+        'accident_history': 'Historical Accident Proximity',
+        'time_of_day': 'Time of Day',
+        'road_type': 'Road Type',
+        'traffic_density': 'Traffic Density'
+    };
+
     factors.forEach(f => {
-        const item = document.createElement('div');
-        item.className = 'factor-item';
-        const color = f.percentage >= 30 ? '#DC2626' : f.percentage >= 15 ? '#EA580C' : '#3B82F6';
-        item.innerHTML = `
-            <div class="factor-top">
-                <span class="factor-name">${f.icon || '📊'} ${f.title}</span>
-                <span class="factor-pct" style="color:${color};background:${color}18;">${f.percentage}%</span>
+        if (!f.icon && iconMap[f.factor]) f.icon = iconMap[f.factor];
+        if (titleMap[f.factor]) f.title = titleMap[f.factor];
+    });
+
+    // Sort by contribution percentage descending
+    factors.sort((a, b) => b.percentage - a.percentage);
+
+    factors.forEach(f => {
+        const row = document.createElement('div');
+        row.className = 'shap-factor-row';
+        const color = f.percentage >= 30 ? '#D93025' : f.percentage >= 20 ? '#EA580C' : f.percentage >= 12 ? '#F9AB00' : '#1A73E8';
+        row.innerHTML = `
+            <div class="shap-factor-label">
+                <span class="shap-factor-icon">${f.icon || '📊'}</span>
+                <span class="shap-factor-name">${f.title}</span>
             </div>
-            <div class="factor-progress-track">
-                <div class="factor-progress-fill" style="width:${Math.min(100, Math.max(8, f.percentage))}%;background:${color};"></div>
+            <div class="shap-factor-bar-group">
+                <div class="shap-bar-track">
+                    <div class="shap-bar-fill" style="width: ${Math.min(100, Math.max(8, f.percentage))}%; background: ${color};"></div>
+                </div>
+                <span class="shap-value">${f.percentage.toFixed(1)}%</span>
             </div>
-            <div class="factor-explanation">${f.explanation || ''}</div>
         `;
-        container.appendChild(item);
+        container.appendChild(row);
     });
 }
 
@@ -990,8 +1163,12 @@ function toggleAlternateRoutes(visible) {
 
 function toggleLegend() {
     const leg = document.querySelector('.gmaps-floating-legend');
+    if (!leg) return;
     leg.classList.toggle('collapsed');
-    document.getElementById('legend-caret').textContent = leg.classList.contains('collapsed') ? '▼' : '▲';
+    const caret = document.getElementById('legend-caret');
+    if (caret) {
+        caret.textContent = leg.classList.contains('collapsed') ? '▲' : '▼';
+    }
 }
 
 function recenterRoute() {

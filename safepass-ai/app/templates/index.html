@@ -25,7 +25,7 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
 
-    <link rel="stylesheet" href="/static/css/main.css?v=3.1">
+    <link rel="stylesheet" href="/static/css/main.css?v=3.6">
 </head>
 <body class="gmaps-body">
     <!-- ═══ FULLSCREEN MAP-FIRST CANVAS (100% Viewport) ═════════════════ -->
@@ -167,55 +167,60 @@
             <div class="card-routes-section" id="card-routes-section" style="display:none;">
                 <div class="section-divider"></div>
 
-                <div class="section-header-mini">
-                    <span class="section-title-sm">Route Alternatives</span>
-                    <span class="route-count-badge" id="route-count-badge">3 options</span>
+                <!-- 1. Compact Route Alternatives Chip Strip (Pinned at Top) -->
+                <div class="route-chips-container" id="route-chips-container">
+                    <div class="route-chips-header">
+                        <span class="chips-label">SELECT CORRIDOR</span>
+                        <span class="route-count-badge" id="route-count-badge">3 options</span>
+                    </div>
+                    <div class="route-chips-scroll" id="route-chips-strip">
+                        <!-- Populated by JS as compact horizontal chips -->
+                    </div>
                 </div>
 
-                <!-- Scrollable Route Alternative Cards -->
-                <div class="route-cards-scroll" id="route-cards-list">
-                    <!-- Populated by JS -->
-                </div>
+                <!-- Hidden full cards container for fallback -->
+                <div class="route-cards-scroll" id="route-cards-list" style="display:none;"></div>
 
-                <!-- Inline Active Route Corridor Intelligence (Google Maps Style Details) -->
-                <div class="inline-route-details" id="active-route-insights">
-                    <div class="details-divider"></div>
-
-                    <!-- Selected Route Summary Bar -->
-                    <div class="selected-route-banner">
-                        <div class="banner-score-col">
-                            <span class="safety-score-number" id="safety-score">--</span>
-                            <span class="safety-score-label">SAFETY</span>
+                <!-- 2. Sticky Single Summary Row (Merged Score + Title + Distance/Time/CRI) -->
+                <div class="sticky-summary-row" id="sticky-summary-row">
+                    <div class="sticky-summary-content">
+                        <div class="sticky-score-badge" id="safety-score-pill">
+                            <span class="score-number" id="safety-score">--</span>
+                            <span class="score-sub">SAFETY</span>
                         </div>
-                        <div class="banner-info-col">
-                            <div class="banner-route-name" id="sheet-route-name">Recommended Safe Corridor</div>
-                            <div class="banner-meta-row">
-                                <span class="meta-dist" id="distance-time">-- km · -- min</span>
+                        <div class="sticky-meta-col">
+                            <div class="sticky-route-title" id="sheet-route-name">Recommended Safe Corridor</div>
+                            <div class="sticky-metrics-line">
+                                <span class="meta-val" id="distance-time">-- km · -- min</span>
                                 <span class="meta-dot">·</span>
-                                <span class="meta-danger" id="danger-zones">-- zones</span>
+                                <span class="meta-val danger-text" id="danger-zones">-- zones</span>
                                 <span class="meta-dot">·</span>
-                                <span>CRI <strong id="avg-cri">--</strong></span>
+                                <span class="meta-val">CRI <strong id="avg-cri">--</strong></span>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Primary Actions for Active Route -->
-                    <div class="inline-actions-row">
-                        <button class="btn-primary inline-drive-btn" onclick="startNavigationPreview()">
-                            <span>▶️ Start Safety Navigation</span>
-                        </button>
-                        <button class="btn-secondary inline-cloud-btn" onclick="saveCurrentTripToCloud()" id="btn-save-cloud" title="Save trip to cloud">
-                            <span>☁️ Save</span>
-                        </button>
-                    </div>
+                <!-- Primary CTA & Outlined Secondary Save CTA -->
+                <div class="sticky-actions-row">
+                    <button class="btn-primary inline-drive-btn" onclick="startNavigationPreview()">
+                        <span>▶️ Start Safety Navigation</span>
+                    </button>
+                    <button class="btn-secondary-outlined inline-cloud-btn" onclick="saveCurrentTripToCloud()" id="btn-save-cloud" title="Save trip to cloud">
+                        <span class="btn-icon">☁️</span>
+                        <span>Save</span>
+                    </button>
+                </div>
 
-                    <!-- Insights Tab Bar -->
-                    <div class="insights-tabs">
-                        <button class="insight-tab-btn active" onclick="switchInsightTab('summary', this)">Safety Summary</button>
-                        <button class="insight-tab-btn" onclick="switchInsightTab('checkpoints', this)">Road Hazards (<span id="hazard-count-tab">0</span>)</button>
-                        <button class="insight-tab-btn" onclick="switchInsightTab('temporal', this)">Safe Timing</button>
-                    </div>
+                <!-- 3. Sticky Tab Bar: Pinned directly below sticky summary -->
+                <div class="sticky-tab-bar" id="sticky-tab-bar">
+                    <button class="insight-tab-btn active" onclick="switchInsightTab('summary', this)">Safety Summary</button>
+                    <button class="insight-tab-btn" onclick="switchInsightTab('checkpoints', this)">Road Hazards (<span id="hazard-count-tab">0</span>)</button>
+                    <button class="insight-tab-btn" onclick="switchInsightTab('temporal', this)">Safe Timing</button>
+                </div>
 
+                <!-- 4. Scrollable Active Tab Content (Only this section scrolls) -->
+                <div class="tab-content-scrollable" id="tab-content-scrollable">
                     <!-- Tab 1: Safety Summary & AI Explainability -->
                     <div class="tab-pane active" id="pane-summary">
                         <div class="safety-advisory-box" id="safety-advisory-box">
@@ -238,15 +243,22 @@
                                 <span class="explainability-chevron" id="explainability-chevron">▼</span>
                             </div>
                             <div class="explainability-body" id="explainability-body" style="display:none;">
-                                <div class="explainability-meta-row">
-                                    <span class="ml-model-name-tag" id="ml-model-name">Gradient Boosting (MoRTH Trained)</span>
-                                    <span class="ml-badge-metric">R² = 96.8%</span>
+                                <!-- Model metadata separated at top of panel -->
+                                <div class="explainability-model-caption">
+                                    <span class="model-caption-item"><strong>Model:</strong> <span id="ml-model-name">GradientBoostingRegressor</span></span>
+                                    <span class="caption-dot">·</span>
+                                    <span class="model-caption-item"><strong>R²:</strong> 96.8%</span>
+                                    <span class="caption-dot">·</span>
+                                    <span class="model-caption-item">Tree SHAP Attribution</span>
                                 </div>
-                                <div class="factors-list" id="factors-container">
+
+                                <!-- Structured Factor Rows: icon + label left, bar + % right, sorted descending -->
+                                <div class="shap-factors-list" id="factors-container">
                                     <!-- Populated dynamically by app.js -->
                                 </div>
+
                                 <div class="explainability-footer">
-                                    <span>Calculated via Tree SHAP feature attribution on 7 corridor risk vectors.</span>
+                                    <span>Calculated via Tree SHAP feature attribution across 7 corridor vectors.</span>
                                 </div>
                             </div>
                         </div>
@@ -738,6 +750,6 @@ SUPABASE_KEY=your-supabase-anon-key</code></pre>
     <script>
         const MAPBOX_TOKEN = "{{ mapbox_token }}";
     </script>
-    <script src="/static/js/app.js?v=3.1"></script>
+    <script src="/static/js/app.js?v=3.5"></script>
 </body>
 </html>
