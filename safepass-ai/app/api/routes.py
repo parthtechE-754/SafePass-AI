@@ -134,15 +134,15 @@ def _evaluate_ml_corridor_risk(route_name: str, danger_zones: int, weather: dict
     blackspot = 1 if danger_zones > 0 else 0
     accident_hist = max(1, danger_zones * 3)
 
-    return ml_service.predict_risk({
-        "time_of_day": tod,
-        "weather_severity": w_sev,
-        "road_type": rtype,
-        "historical_accident_count": accident_hist,
-        "visibility_score": min(10.0, max(0.5, vis_km)),
-        "traffic_density": density,
-        "is_blackspot": blackspot,
-    })
+    return ml_service.predict_risk(
+        time_of_day=tod,
+        weather_severity=w_sev,
+        road_type=rtype,
+        historical_accident_count=accident_hist,
+        visibility_score=min(10.0, max(0.5, vis_km)),
+        traffic_density=density,
+        is_blackspot=blackspot,
+    )
 
 
 @router.post("/predict-risk")
@@ -151,7 +151,7 @@ async def api_predict_risk(body: PredictRiskRequest):
     Task 1 Endpoint: Predict continuous Corridor Risk Index (0-10)
     using trained Gradient Boosting Regressor with SHAP feature attribution explainability.
     """
-    return ml_service.predict_risk(body.model_dump())
+    return ml_service.predict_risk(**body.model_dump())
 
 
 @router.post("/classify-hazard")
@@ -172,7 +172,7 @@ async def api_health(request: Request):
     return {
         "status": "healthy",
         "service": "SafePass AI",
-        "version": "1.0.0",
+        "version": "2.0.0",
         "blackspots_loaded": spots_count,
         "database": supabase_service.get_status()["mode"],
         "ml_models": {
