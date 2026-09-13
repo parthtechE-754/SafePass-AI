@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SafePass Maps Architecture Mindmap</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  body {
+    background: #FFFFFF;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: #0F172A;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 30px;
+    width: 1040px;
+    margin: 0 auto;
+    -webkit-font-smoothing: antialiased;
+  }
+  
+  .diagram-container {
+    width: 980px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+  }
+
+  /* Root Node */
+  .node-root {
+    background: #0F172A;
+    color: #FFFFFF;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+    padding: 12px 36px;
+    border-radius: 9999px;
+    box-shadow: 0 4px 18px rgba(15, 23, 42, 0.22);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+  }
+  .node-root svg {
+    width: 17px;
+    height: 17px;
+    fill: #EA580C;
+  }
+
+  /* Two Column Layout */
+  .columns-row {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 468px 468px;
+    column-gap: 44px;
+    position: relative;
+  }
+
+  .col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+
+  /* Column Headers */
+  .col-header {
+    width: 100%;
+    border-radius: 12px;
+    padding: 13px 20px;
+    font-size: 14.5px;
+    font-weight: 700;
+    color: #FFFFFF;
+    text-align: center;
+    letter-spacing: 0.2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .col-header.green {
+    background: linear-gradient(135deg, #15803D 0%, #16A34A 100%);
+    box-shadow: 0 4px 14px rgba(22, 163, 74, 0.28);
+  }
+  .col-header.blue {
+    background: linear-gradient(135deg, #1D4ED8 0%, #2563EB 100%);
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.28);
+  }
+
+  /* Step Card */
+  .step-card {
+    width: 100%;
+    background: #FFFFFF;
+    border: 1.5px solid #E2E8F0;
+    border-radius: 12px;
+    padding: 12px 18px;
+    box-shadow: 0 3px 12px rgba(15, 23, 42, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .step-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+  .step-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #0F172A;
+    line-height: 1.25;
+  }
+  .step-subtitle {
+    font-size: 12px;
+    color: #64748B;
+    font-weight: 500;
+    line-height: 1.35;
+  }
+
+  /* Vertical Step Connector */
+  .v-connector {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 22px;
+  }
+
+  /* Badges */
+  .badge {
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+  .badge.frontend {
+    background: #EFF6FF;
+    color: #1D4ED8;
+    border: 1px solid #BFDBFE;
+  }
+  .badge.backend {
+    background: #FFF7ED;
+    color: #C2410C;
+    border: 1px solid #FFEDD5;
+  }
+  .badge.response {
+    background: #FAF5FF;
+    color: #7E22CE;
+    border: 1px solid #E9D5FF;
+  }
+  .badge.database {
+    background: #ECFDF5;
+    color: #047857;
+    border: 1px solid #A7F3D0;
+  }
+
+  /* Core AI Engine Node (Central Orange Box) */
+  .node-ai-engine {
+    width: 100%;
+    background: linear-gradient(135deg, #EA580C 0%, #F97316 100%);
+    border-radius: 14px;
+    padding: 16px 28px;
+    color: #FFFFFF;
+    text-align: center;
+    box-shadow: 0 8px 24px rgba(234, 88, 12, 0.32);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+  }
+  .node-ai-engine .ai-title {
+    font-size: 16.5px;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .node-ai-engine .ai-subtitle {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #FFEDD5;
+    letter-spacing: 0.2px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* Database Node (Teal) */
+  .node-database {
+    width: 100%;
+    background: linear-gradient(135deg, #0F766E 0%, #0D9488 100%);
+    border-radius: 14px;
+    padding: 15px 28px;
+    color: #FFFFFF;
+    text-align: center;
+    box-shadow: 0 6px 22px rgba(13, 148, 136, 0.28);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+  }
+  .node-database .db-header-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .node-database .db-title {
+    font-size: 15.5px;
+    font-weight: 800;
+    letter-spacing: 0.2px;
+  }
+  .node-database .db-subtitle {
+    font-size: 12.5px;
+    font-weight: 500;
+    color: #CCFBF1;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* Bottom Actions Row */
+  .bottom-row {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 468px 468px;
+    column-gap: 44px;
+  }
+  .bottom-card {
+    background: #FFFFFF;
+    border: 1.5px solid #E2E8F0;
+    border-radius: 12px;
+    padding: 14px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    box-shadow: 0 3px 12px rgba(15, 23, 42, 0.05);
+  }
+  .bottom-card.nav {
+    border-left: 5px solid #16A34A;
+  }
+  .bottom-card.sos {
+    border-left: 5px solid #DC2626;
+  }
+  .bottom-card .b-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #0F172A;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .bottom-card .b-sub {
+    font-size: 12px;
+    color: #64748B;
+    font-weight: 500;
+  }
+
+  /* Footer Brand */
+  .footer-brand {
+    margin-top: 26px;
+    text-align: center;
+  }
+  .footer-brand .brand-title {
+    font-size: 15px;
+    font-weight: 800;
+    color: #0F172A;
+    letter-spacing: 0.3px;
+  }
+  .footer-brand .brand-tagline {
+    font-size: 12px;
+    color: #EA580C;
+    font-weight: 600;
+    margin-top: 3px;
+    letter-spacing: 0.2px;
+  }
+
+  /* High Precision SVG Canvas Connectors */
+  .flow-svg {
+    width: 980px;
+    height: 38px;
+    display: block;
+  }
+</style>
+</head>
+<body>
+
+<div class="diagram-container">
+
+  <!-- ROOT NODE -->
+  <div class="node-root">
+    <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+    Open SafePass Maps
+  </div>
+
+  <!-- CONNECTOR SPLIT TO TWO COLUMNS -->
+  <!-- Col1 Center = 234, Col2 Center = 746, Middle = 490 -->
+  <svg class="flow-svg" viewBox="0 0 980 38">
+    <defs>
+      <marker id="arr-gray" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 1 2 L 7 5 L 1 8 z" fill="#94A3B8" />
+      </marker>
+    </defs>
+    <!-- Left Branch -->
+    <path d="M 490 2 C 490 20, 234 14, 234 33" fill="none" stroke="#94A3B8" stroke-width="2.2" stroke-linecap="round" marker-end="url(#arr-gray)" />
+    <!-- Right Branch -->
+    <path d="M 490 2 C 490 20, 746 14, 746 33" fill="none" stroke="#94A3B8" stroke-width="2.2" stroke-linecap="round" marker-end="url(#arr-gray)" />
+  </svg>
+
+  <!-- TOP TWO COLUMNS: PLAN A ROUTE vs REPORT A HAZARD -->
+  <div class="columns-row">
+    
+    <!-- LEFT COLUMN: Plan a Route -->
+    <div class="col">
+      <div class="col-header green">
+        <span>🗺️ Plan a Route</span>
+      </div>
+
+      <div class="v-connector">
+        <svg width="12" height="22" viewBox="0 0 12 22">
+          <line x1="6" y1="0" x2="6" y2="15" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" />
+          <polygon points="2,14 6,21 10,14" fill="#94A3B8" />
+        </svg>
+      </div>
+
+      <div class="step-card">
+        <div class="step-card-header">
+          <div class="step-title">Search Origin & Destination</div>
+          <span class="badge frontend">Frontend</span>
+        </div>
+        <div class="step-subtitle">MapLibre GL JS map UI</div>
+      </div>
+
+      <div class="v-connector">
+        <svg width="12" height="22" viewBox="0 0 12 22">
+          <line x1="6" y1="0" x2="6" y2="15" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" />
+          <polygon points="2,14 6,21 10,14" fill="#94A3B8" />
+        </svg>
+      </div>
+
+      <div class="step-card">
+        <div class="step-card-header">
+          <div class="step-title">Select Mode & Corridor</div>
+          <span class="badge frontend">Frontend</span>
+        </div>
+        <div class="step-subtitle">Car / Bike / Truck</div>
+      </div>
+
+      <div class="v-connector">
+        <svg width="12" height="22" viewBox="0 0 12 22">
+          <line x1="6" y1="0" x2="6" y2="15" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" />
+          <polygon points="2,14 6,21 10,14" fill="#94A3B8" />
+        </svg>
+      </div>
+
+      <div class="step-card">
+        <div class="step-card-header">
+          <div class="step-title">Request Route Alternatives</div>
+          <span class="badge backend">Backend</span>
+        </div>
+        <div class="step-subtitle">REST API call to routing engine</div>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN: Report a Hazard -->
+    <div class="col">
+      <div class="col-header blue">
+        <span>⚠️ Report a Hazard</span>
+      </div>
+
+      <div class="v-connector">
+        <svg width="12" height="22" viewBox="0 0 12 22">
+          <line x1="6" y1="0" x2="6" y2="15" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" />
+          <polygon points="2,14 6,21 10,14" fill="#94A3B8" />
+        </svg>
+      </div>
+
+      <div class="step-card">
+        <div class="step-card-header">
+          <div class="step-title">Fill Hazard Form</div>
+          <span class="badge frontend">Frontend</span>
+        </div>
+        <div class="step-subtitle">Category, severity, location</div>
+      </div>
+
+      <div class="v-connector">
+        <svg width="12" height="22" viewBox="0 0 12 22">
+          <line x1="6" y1="0" x2="6" y2="15" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" />
+          <polygon points="2,14 6,21 10,14" fill="#94A3B8" />
+        </svg>
+      </div>
+
+      <div class="step-card">
+        <div class="step-card-header">
+          <div class="step-title">Capture GPS Location</div>
+          <span class="badge frontend">Frontend</span>
+        </div>
+        <div class="step-subtitle">Live coordinates auto-filled</div>
+      </div>
+
+      <div class="v-connector">
+        <svg width="12" height="22" viewBox="0 0 12 22">
+          <line x1="6" y1="0" x2="6" y2="15" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" />
+          <polygon points="2,14 6,21 10,14" fill="#94A3B8" />
+        </svg>
+      </div>
+
+      <div class="step-card">
+        <div class="step-card-header">
+          <div class="step-title">Submit Report</div>
+          <span class="badge backend">Backend</span>
+        </div>
+        <div class="step-subtitle">Triggers NLP classifier</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- CONVERGING ARROWS TO AI ENGINE -->
+  <svg class="flow-svg" viewBox="0 0 980 38">
+    <defs>
+      <marker id="arr-orange" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 1 2 L 7 5 L 1 8 z" fill="#EA580C" />
+      </marker>
+    </defs>
+    <path d="M 234 3 C 234 22, 490 16, 490 33" fill="none" stroke="#EA580C" stroke-width="2.2" stroke-linecap="round" marker-end="url(#arr-orange)" />
+    <path d="M 746 3 C 746 22, 490 16, 490 33" fill="none" stroke="#EA580C" stroke-width="2.2" stroke-linecap="round" marker-end="url(#arr-orange)" />
+  </svg>
+
+  <!-- CENTRAL NODE: AI/ML PROCESSING ENGINE -->
+  <div class="node-ai-engine">
+    <div class="ai-title">
+      <span>⚡ AI/ML Processing Engine</span>
+    </div>
+    <div class="ai-subtitle">GradientBoostingRegressor + SHAP (scikit-learn)</div>
+  </div>
+
+  <!-- DIVERGING ARROWS TO RESPONSE CARDS -->
+  <svg class="flow-svg" viewBox="0 0 980 38">
+    <defs>
+      <marker id="arr-purple" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 1 2 L 7 5 L 1 8 z" fill="#94A3B8" />
+      </marker>
+    </defs>
+    <path d="M 490 2 C 490 20, 234 14, 234 33" fill="none" stroke="#94A3B8" stroke-width="2.2" stroke-linecap="round" marker-end="url(#arr-purple)" />
+    <path d="M 490 2 C 490 20, 746 14, 746 33" fill="none" stroke="#94A3B8" stroke-width="2.2" stroke-linecap="round" marker-end="url(#arr-purple)" />
+  </svg>
+
+  <!-- POST-AI TWO COLUMNS: RESPONSES -->
+  <div class="columns-row">
+
+    <!-- LEFT COLUMN: Route Risk & Explainability -->
+    <div class="col">
+      <div class="step-card">
+        <div class="step-card-header">
+          <div class="step-title">Corridor Safety Scores</div>
+          <span class="badge response">Response</span>
+        </div>
+        <div class="step-subtitle">0–10 score, CRI index</div>
+      </div>
+
+      <div class="v-connector">
+        <svg width="12" height="22" viewBox="0 0 12 22">
+          <line x1="6" y1="0" x2="6" y2="15" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" />
+          <polygon points="2,14 6,21 10,14" fill="#94A3B8" />
+        </svg>
+      </div>
+
+      <div class="step-card">
+        <div class="step-card-header">
+          <div class="step-title">SHAP Factor Breakdown</div>
+          <span class="badge response">Response</span>
+        </div>
+        <div class="step-subtitle">Ranked risk contributors</div>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN: Hazard Classification & Cloud Publish -->
+    <div class="col">
+      <div class="step-card">
+        <div class="step-card-header">
+          <div class="step-title">Severity & Category Tag</div>
+          <span class="badge response">Response</span>
+        </div>
+        <div class="step-subtitle">AI-suggested, citizen-confirmed</div>
+      </div>
+
+      <div class="v-connector">
+        <svg width="12" height="22" viewBox="0 0 12 22">
+          <line x1="6" y1="0" x2="6" y2="15" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" />
+          <polygon points="2,14 6,21 10,14" fill="#94A3B8" />
+        </svg>
+      </div>
+
+      <div class="step-card">
+        <div class="step-card-header">
+          <div class="step-title">Publish to Cloud Network</div>
+          <span class="badge backend">Backend</span>
+        </div>
+        <div class="step-subtitle">Hazard pin added to live map</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- CONVERGING ARROWS TO DATABASE -->
+  <svg class="flow-svg" viewBox="0 0 980 38">
+    <defs>
+      <marker id="arr-teal" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 1 2 L 7 5 L 1 8 z" fill="#0D9488" />
+      </marker>
+    </defs>
+    <path d="M 234 3 C 234 22, 490 16, 490 33" fill="none" stroke="#0D9488" stroke-width="2.2" stroke-linecap="round" marker-end="url(#arr-teal)" />
+    <path d="M 746 3 C 746 22, 490 16, 490 33" fill="none" stroke="#0D9488" stroke-width="2.2" stroke-linecap="round" marker-end="url(#arr-teal)" />
+  </svg>
+
+  <!-- DATABASE NODE -->
+  <div class="node-database">
+    <div class="db-header-row">
+      <span class="badge database" style="background: rgba(255,255,255,0.22); color: #FFFFFF; border: none; font-size: 10px;">Database</span>
+      <div class="db-title">Supabase Cloud Database</div>
+    </div>
+    <div class="db-subtitle">PostgreSQL · routes, hazards, trips</div>
+  </div>
+
+  <!-- ARROWS TO FINAL BOTTOM ACTIONS -->
+  <svg class="flow-svg" viewBox="0 0 980 38">
+    <path d="M 490 2 C 490 20, 234 14, 234 33" fill="none" stroke="#94A3B8" stroke-width="2.2" stroke-linecap="round" marker-end="url(#arr-gray)" />
+    <path d="M 490 2 C 490 20, 746 14, 746 33" fill="none" stroke="#94A3B8" stroke-width="2.2" stroke-linecap="round" marker-end="url(#arr-gray)" />
+  </svg>
+
+  <!-- BOTTOM ROW: LIVE NAVIGATION & SOS -->
+  <div class="bottom-row">
+    <div class="bottom-card nav">
+      <div class="b-title">
+        <span>🧭 Live Navigation Mode</span>
+      </div>
+      <div class="b-sub">GPS Voice alerts, proximity warnings</div>
+    </div>
+
+    <div class="bottom-card sos">
+      <div class="b-title">
+        <span>🚨 SOS & Emergency Assist</span>
+      </div>
+      <div class="b-sub">112 / 1033 + WhatsApp SOS</div>
+    </div>
+  </div>
+
+  <!-- FOOTER PLATFORM BRAND -->
+  <div class="footer-brand">
+    <div class="brand-title">SafePass Maps Platform</div>
+    <div class="brand-tagline">Predictive Routing · Explainable Risk · Real-Time Safety</div>
+  </div>
+
+</div>
+
+</body>
+</html>
