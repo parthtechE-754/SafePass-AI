@@ -1,0 +1,10 @@
+{
+  "r2_score": 0.968,
+  "mae": 0.2776,
+  "rmse": 0.3506,
+  "algorithm": "GradientBoostingRegressor (scikit-learn)",
+  "n_estimators": 150,
+  "max_depth": 4,
+  "training_samples": 9600,
+  "test_samples": 2400
+}

@@ -13,12 +13,29 @@ from pydantic import BaseModel
 
 from app.data.blackspots import get_blackspots_geojson, get_nearby_blackspots
 from app.ml.risk_engine import RiskEngine
+from app.ml.service import ml_service
 from app.services.supabase_client import supabase_service
 
 router = APIRouter()
 
 
 # ── Request / Response Models ─────────────────────────────────────────────
+
+class PredictRiskRequest(BaseModel):
+    """Features for trained CRI Gradient Boosting Regressor."""
+    time_of_day: str = "day"
+    weather_severity: float = 0.0
+    road_type: str = "highway"
+    historical_accident_count: int = 1
+    visibility_score: float = 8.0
+    traffic_density: float = 0.5
+    is_blackspot: int = 0
+
+
+class ClassifyHazardRequest(BaseModel):
+    """Citizen hazard report free text to classify."""
+    text: str
+
 
 class RouteRiskRequest(BaseModel):
     """Request body for route risk computation."""
@@ -76,6 +93,76 @@ class LogSosRequest(BaseModel):
     notes: Optional[str] = "Emergency call from SafePass Maps"
 
 
+# ── AI / ML Defensible Intelligence Endpoints ─────────────────────────────
+
+def _evaluate_ml_corridor_risk(route_name: str, danger_zones: int, weather: dict, travel_time: datetime) -> dict:
+    """Evaluate Corridor Risk Index using the trained GradientBoostingRegressor with SHAP factors."""
+    travel_h = travel_time.hour
+    if 5 <= travel_h < 8:
+        tod = "dawn"
+    elif 8 <= travel_h < 17:
+        tod = "day"
+    elif 17 <= travel_h < 20:
+        tod = "dusk"
+    elif 20 <= travel_h < 23:
+        tod = "night"
+    else:
+        tod = "deep-night"
+
+    rain_mm = weather.get("rain_mm", 0) if weather else 0
+    vis_km = weather.get("visibility_km", 10.0) if weather else 10.0
+    if rain_mm > 25:
+        w_sev = 3.0
+    elif rain_mm > 5:
+        w_sev = 2.0
+    elif vis_km < 1.5:
+        w_sev = 2.5
+    elif rain_mm > 0:
+        w_sev = 1.0
+    else:
+        w_sev = 0.0
+
+    r_lower = route_name.lower()
+    if "ghat" in r_lower or "hairpin" in r_lower:
+        rtype = "ghat"
+    elif "highway" in r_lower or "express" in r_lower or "corridor" in r_lower:
+        rtype = "highway"
+    else:
+        rtype = "urban"
+
+    density = 0.70 if (8 <= travel_h <= 11 or 17 <= travel_h <= 21) else 0.40
+    blackspot = 1 if danger_zones > 0 else 0
+    accident_hist = max(1, danger_zones * 3)
+
+    return ml_service.predict_risk({
+        "time_of_day": tod,
+        "weather_severity": w_sev,
+        "road_type": rtype,
+        "historical_accident_count": accident_hist,
+        "visibility_score": min(10.0, max(0.5, vis_km)),
+        "traffic_density": density,
+        "is_blackspot": blackspot,
+    })
+
+
+@router.post("/predict-risk")
+async def api_predict_risk(body: PredictRiskRequest):
+    """
+    Task 1 Endpoint: Predict continuous Corridor Risk Index (0-10)
+    using trained Gradient Boosting Regressor with SHAP feature attribution explainability.
+    """
+    return ml_service.predict_risk(body.model_dump())
+
+
+@router.post("/classify-hazard")
+async def api_classify_hazard(body: ClassifyHazardRequest):
+    """
+    Task 2 Endpoint: NLP classifier for citizen hazard reports.
+    Auto-suggests hazard category & severity with confidence score.
+    """
+    return ml_service.classify_hazard(body.text)
+
+
 # ── System Health Endpoint ───────────────────────────────────────────────
 
 @router.get("/health")
@@ -88,6 +175,11 @@ async def api_health(request: Request):
         "version": "1.0.0",
         "blackspots_loaded": spots_count,
         "database": supabase_service.get_status()["mode"],
+        "ml_models": {
+            "cri_gradient_boosting": ml_service.cri_bundle is not None,
+            "hazard_nlp": ml_service.hazard_bundle is not None,
+            "shap_explainer": ml_service.shap_explainer is not None,
+        }
     }
 
 
@@ -298,6 +390,13 @@ async def compute_route_risk(request: Request, body: RouteRiskRequest):
     # Safety score (inverted CRI, 0-10 where 10 = safest)
     result["safety_score"] = round(10 - result["avg_cri"], 1)
 
+    # Augment with trained ML model prediction & SHAP explainability
+    ml_eval = _evaluate_ml_corridor_risk("Corridor Route", result.get("danger_zones", 0), weather, now)
+    result["ml_cri"] = ml_eval["cri_score"]
+    result["ml_risk_level"] = ml_eval["risk_level"]
+    result["top_factors"] = ml_eval["top_factors"]
+    result["ml_model"] = ml_eval.get("model", "GradientBoostingRegressor (scikit-learn) + SHAP")
+
     return result
 
 
@@ -463,6 +562,14 @@ async def compare_routes(request: Request, body: RouteRiskRequest):
                 "route_points": [{"lat": p[0], "lng": p[1]} for p in points],
             })
             existing_names.add(name)
+
+    # Augment each route with trained ML model prediction & SHAP explainability
+    for r in routes:
+        ml_eval = _evaluate_ml_corridor_risk(r["name"], r.get("danger_zones", 0), weather, now)
+        r["ml_cri"] = ml_eval["cri_score"]
+        r["ml_risk_level"] = ml_eval["risk_level"]
+        r["top_factors"] = ml_eval["top_factors"]
+        r["ml_model"] = ml_eval.get("model", "GradientBoostingRegressor (scikit-learn) + SHAP")
 
     # Sort by safety score (highest safety first)
     routes.sort(key=lambda r: r["safety_score"], reverse=True)

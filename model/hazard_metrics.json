@@ -1,0 +1,14 @@
+{
+  "category_accuracy": 1.0,
+  "severity_mae": 0.9705,
+  "algorithm": "TF-IDF (1,2) + LogisticRegression + Ridge",
+  "classes": [
+    "accident",
+    "blackspot",
+    "fog",
+    "pothole",
+    "waterlogging"
+  ],
+  "train_samples": 2800,
+  "test_samples": 700
+}

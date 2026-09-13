@@ -14,6 +14,7 @@ from dotenv import load_dotenv
 from app.api.routes import router as api_router
 from app.data.blackspots import load_blackspot_data
 from app.ml.risk_engine import RiskEngine
+from app.ml.service import ml_service
 
 load_dotenv()
 
@@ -21,7 +22,7 @@ load_dotenv()
 app = FastAPI(
     title="SafePass AI",
     description="Predictive Corridor Risk Intelligence for Indian Roads",
-    version="1.0.0",
+    version="2.0.0",
 )
 
 app.add_middleware(
@@ -51,8 +52,33 @@ async def startup_event():
     risk_engine.initialize()
     app.state.risk_engine = risk_engine
     app.state.blackspots = load_blackspot_data()
+    app.state.ml_service = ml_service
     print(f"✅ Loaded {len(app.state.blackspots)} blackspot records")
-    print("✅ Risk engine initialized")
+    print(f"✅ Loaded ML CRI Model: {'Active' if ml_service.cri_bundle else 'Fallback'}")
+    print(f"✅ Loaded NLP Hazard Classifier: {'Active' if ml_service.hazard_bundle else 'Fallback'}")
+
+
+# ── Direct Root ML Endpoints (Task 1 & Task 2) ───────────────────────────
+@app.post("/predict-risk")
+async def root_predict_risk(request: Request):
+    """Direct root endpoint for Corridor Risk Index (CRI) ML prediction with SHAP."""
+    body = await request.json()
+    return ml_service.predict_risk(
+        time_of_day=body.get("time_of_day", "day"),
+        weather_severity=body.get("weather_severity", 0),
+        road_type=body.get("road_type", "highway"),
+        historical_accident_count=body.get("historical_accident_count", 5),
+        visibility_score=body.get("visibility_score", 8.5),
+        traffic_density=body.get("traffic_density", 5.0),
+        is_blackspot=body.get("is_blackspot", 0),
+    )
+
+
+@app.post("/classify-hazard")
+async def root_classify_hazard(request: Request):
+    """Direct root endpoint for citizen hazard NLP classification."""
+    body = await request.json()
+    return ml_service.classify_hazard(text=body.get("text", ""))
 
 
 # ── Page Routes ───────────────────────────────────────────────────────────
@@ -80,11 +106,25 @@ async def dashboard(request: Request):
     )
 
 
+@app.get("/model-card")
+async def model_card():
+    """Serve MODEL_CARD.md directly for SIH 2026 judges evaluation."""
+    from fastapi.responses import PlainTextResponse
+    for p in [Path(__file__).parent / "MODEL_CARD.md", Path(__file__).parent.parent / "MODEL_CARD.md"]:
+        if p.exists():
+            return PlainTextResponse(p.read_text(), media_type="text/markdown")
+    return PlainTextResponse("MODEL_CARD.md not found", status_code=404)
+
+
+
 @app.get("/health")
 async def health():
     return {
         "status": "healthy",
         "service": "SafePass AI",
-        "version": "1.0.0",
+        "version": "2.0.0",
         "blackspots_loaded": len(getattr(app.state, "blackspots", [])),
+        "ml_cri_model": ml_service.cri_bundle is not None,
+        "nlp_hazard_model": ml_service.hazard_bundle is not None,
+        "shap_explainability": ml_service.shap_explainer is not None,
     }

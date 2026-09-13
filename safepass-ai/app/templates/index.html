@@ -59,6 +59,9 @@
                 <span id="cloud-icon">☁️</span>
                 <span id="cloud-label">Cloud</span>
             </button>
+            <a href="/model-card" target="_blank" class="header-btn" title="SIH 2026 AI Model Card & Architecture Specifications" style="text-decoration:none;display:inline-flex;align-items:center;gap:4px;">
+                <span>🤖 Model Card</span>
+            </a>
             <button class="header-btn voice-btn" id="voice-toggle-btn" onclick="toggleVoiceAlerts()" title="Spoken Voice Safety Warnings">
                 <span class="voice-icon" id="voice-icon">🔊</span>
                 <span class="voice-label" id="voice-label">Voice Alerts</span>
@@ -243,6 +246,29 @@
                     <div class="safety-advisory-box" id="safety-advisory-box">
                         <span class="advisory-icon">💡</span>
                         <span class="advisory-text" id="safety-advisory-text">Analyzing corridor conditions...</span>
+                    </div>
+
+                    <!-- ── TASK 1: EXPLAINABLE AI MODEL BREAKDOWN (SHAP) ──── -->
+                    <div class="explainability-card" id="explainability-card">
+                        <div class="explainability-header" onclick="toggleExplainabilityDetails()">
+                            <div class="explainability-header-left">
+                                <span class="ai-badge-pill">🤖 AI MODEL</span>
+                                <span class="explainability-title">Why this score?</span>
+                            </div>
+                            <span class="explainability-chevron" id="explainability-chevron">▼</span>
+                        </div>
+                        <div class="explainability-body" id="explainability-body" style="display:none;">
+                            <div class="explainability-meta-row">
+                                <span class="ml-model-name-tag" id="ml-model-name">Gradient Boosting (MoRTH Trained)</span>
+                                <span class="ml-badge-metric">R² = 96.8%</span>
+                            </div>
+                            <div class="factors-list" id="factors-container">
+                                <!-- Populated dynamically by app.js -->
+                            </div>
+                            <div class="explainability-footer">
+                                <span>Calculated via Tree SHAP feature attribution on 7 road corridor vectors.</span>
+                            </div>
+                        </div>
                     </div>
 
                     <div style="display:flex;gap:8px;margin-top:10px;">
@@ -531,9 +557,18 @@ SUPABASE_KEY=your-supabase-anon-key</pre>
                     <input type="text" id="report-title" class="gmap-input" placeholder="e.g. Deep Pothole Cluster / Unlit Ghat Corner" style="width:100%;">
                 </div>
 
+                <!-- ── TASK 2: AI NLP AUTO-SUGGESTION BANNER ──── -->
+                <div id="ai-hazard-nlp-box" class="ai-hazard-nlp-box" style="display:none;">
+                    <div class="ai-nlp-left">
+                        <span class="ai-nlp-badge">🤖 AI AUTO-DETECT</span>
+                        <span class="ai-nlp-text" id="ai-nlp-text">Suggested: <strong>Pothole</strong> (Severity 5.5/10)</span>
+                    </div>
+                    <span class="ai-nlp-conf" id="ai-nlp-confidence">98% confidence</span>
+                </div>
+
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
                     <div>
-                        <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">Hazard Category</label>
+                        <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">Hazard Category <span style="color:#6366F1;font-size:10px;">(AI Auto-Suggested)</span></label>
                         <select id="report-type" class="gmap-select" style="width:100%;">
                             <option value="pothole">🚧 Pothole / Bad Road</option>
                             <option value="waterlogging">🌊 Monsoon Waterlogging</option>
@@ -543,9 +578,9 @@ SUPABASE_KEY=your-supabase-anon-key</pre>
                         </select>
                     </div>
                     <div>
-                        <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">Risk Severity (1-10)</label>
+                        <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">Risk Severity <span style="color:#6366F1;font-size:10px;">(AI Auto-Suggested)</span></label>
                         <select id="report-severity" class="gmap-select" style="width:100%;">
-                            <option value="4.0">Low (4/10)</option>
+                            <option value="4.0">Low (4.0/10)</option>
                             <option value="6.5" selected>Moderate (6.5/10)</option>
                             <option value="8.5">High Danger (8.5/10)</option>
                             <option value="9.5">Critical Emergency (9.5/10)</option>
@@ -570,8 +605,11 @@ SUPABASE_KEY=your-supabase-anon-key</pre>
                 </div>
 
                 <div>
-                    <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">Details & Warning Advice</label>
-                    <textarea id="report-desc" class="gmap-input" rows="2" placeholder="Describe dangerous road condition, recommended caution speed..." style="width:100%;resize:none;"></textarea>
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+                        <label style="font-size:12px;font-weight:600;color:#475569;">Details & Warning Advice</label>
+                        <span style="font-size:11px;color:#4F46E5;font-weight:600;">✨ Live NLP Active — type to auto-classify</span>
+                    </div>
+                    <textarea id="report-desc" class="gmap-input" rows="2" placeholder="e.g. car flipped on blind hairpin turn, oil spill across dual carriageway..." style="width:100%;resize:none;"></textarea>
                 </div>
 
                 <button onclick="submitHazardReport()" id="btn-submit-hazard" style="background:linear-gradient(135deg, #EA580C, #C2410C);color:#fff;border:none;padding:12px;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;margin-top:4px;">

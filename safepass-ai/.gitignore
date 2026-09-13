@@ -22,3 +22,5 @@ env/
 *.log
 .tempmediaStorage/
 scratch/
+bin/
+
