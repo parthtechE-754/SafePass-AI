@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1920, height=1080, initial-scale=1.0">
+    <title>SafePass AI — Technical Approach Slide</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            width: 1920px;
+            height: 1080px;
+            overflow: hidden;
+            background: #FFFFFF;
+            font-family: 'Inter', -apple-system, sans-serif;
+            color: #0F172A;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* ── Slide Header ────────────────────────────────────────── */
+        .slide-header {
+            width: 100%;
+            height: 150px;
+            padding: 28px 70px 10px 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        /* Team / Project Oval Badge (Left) */
+        .badge-oval {
+            width: 170px;
+            height: 84px;
+            border: 2.5px solid #1E3A8A;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: #FFFFFF;
+            box-shadow: 0 4px 14px rgba(30, 58, 138, 0.08);
+        }
+
+        .badge-oval-sub {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            color: #64748B;
+            text-transform: uppercase;
+        }
+
+        .badge-oval-title {
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            color: #1E3A8A;
+        }
+
+        /* Slide Title (Center) */
+        .slide-title-container {
+            flex: 1;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .slide-main-title {
+            font-family: 'Cinzel', serif;
+            font-size: 46px;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            color: #0F172A;
+            text-transform: uppercase;
+        }
+
+        .slide-title-underline {
+            width: 140px;
+            height: 3.5px;
+            background: linear-gradient(90deg, #1E3A8A, #EA580C);
+            margin: 6px auto 0 auto;
+            border-radius: 2px;
+        }
+
+        /* SIH 2026 Logo (Right) */
+        .sih-logo-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sih-logo-icon {
+            width: 68px;
+            height: 68px;
+        }
+
+        .sih-text-block {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.05;
+        }
+
+        .sih-text-smart {
+            font-size: 20px;
+            font-weight: 900;
+            color: #1E3A8A;
+            letter-spacing: 0.03em;
+        }
+
+        .sih-text-india {
+            font-size: 20px;
+            font-weight: 900;
+            color: #EA580C;
+            letter-spacing: 0.03em;
+        }
+
+        .sih-text-hackathon {
+            font-size: 13px;
+            font-weight: 800;
+            color: #0F172A;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        .sih-year {
+            font-size: 22px;
+            font-weight: 900;
+            color: #1E3A8A;
+        }
+
+        /* ── Slide Main Body (2 Columns) ────────────────────────── */
+        .slide-body {
+            flex: 1;
+            padding: 10px 70px 40px 70px;
+            display: grid;
+            grid-template-columns: 1.05fr 0.95fr;
+            gap: 45px;
+            align-items: stretch;
+        }
+
+        /* ── Left Box: Algorithm & Platform Development ──────────── */
+        .left-card {
+            background: #FFFFFF;
+            border: 2px solid #3B82F6;
+            border-radius: 22px;
+            padding: 30px 34px;
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.06);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .section-header-title {
+            font-size: 22px;
+            font-weight: 800;
+            color: #1E3A8A;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-header-title::after {
+            content: '';
+            flex: 1;
+            height: 1.5px;
+            background: #E2E8F0;
+        }
+
+        .sub-block {
+            margin-bottom: 14px;
+        }
+
+        .sub-block-title {
+            font-size: 16.5px;
+            font-weight: 700;
+            color: #1E3A8A;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .sub-block-content {
+            font-size: 13.8px;
+            color: #334155;
+            line-height: 1.52;
+            text-align: justify;
+        }
+
+        .sub-block-content strong {
+            color: #0F172A;
+        }
+
+        /* Formula Box */
+        .formula-card {
+            background: #FFF7ED;
+            border: 1.5px solid #FDBA74;
+            border-left: 5px solid #EA580C;
+            border-radius: 10px;
+            padding: 10px 14px;
+            margin: 8px 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #9A3412;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .formula-tag {
+            font-size: 11px;
+            font-weight: 800;
+            padding: 2px 8px;
+            background: #EA580C;
+            color: #FFFFFF;
+            border-radius: 4px;
+            letter-spacing: 0.05em;
+        }
+
+        /* Tech Stack Pills at Bottom of Left Card */
+        .tech-tags-container {
+            margin-top: 18px;
+            padding-top: 14px;
+            border-top: 1px dashed #CBD5E1;
+        }
+
+        .tech-tags-label {
+            font-size: 11.5px;
+            font-weight: 800;
+            color: #64748B;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 8px;
+        }
+
+        .tech-tags-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+        }
+
+        .tech-tag {
+            padding: 4px 10px;
+            background: #F1F5F9;
+            border: 1px solid #E2E8F0;
+            border-radius: 6px;
+            font-size: 11.5px;
+            font-weight: 700;
+            color: #1E3A8A;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .tech-tag.orange {
+            background: #FFF7ED;
+            border-color: #FED7AA;
+            color: #C2410C;
+        }
+
+        /* ── Right Box: Architecture Flowchart Pipeline ─────────── */
+        .right-flowchart {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .flow-node {
+            width: 100%;
+            border-radius: 12px;
+            padding: 16px 20px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+            transition: all 0.2s;
+        }
+
+        .flow-title {
+            font-size: 16.5px;
+            font-weight: 800;
+            letter-spacing: 0.01em;
+            margin-bottom: 3px;
+        }
+
+        .flow-subtitle {
+            font-size: 12.8px;
+            line-height: 1.35;
+        }
+
+        /* Step 1: Dark Navy Ingestion */
+        .node-step1 {
+            background: #1E3A8A;
+            color: #FFFFFF;
+            border: 2px solid #1E3A8A;
+        }
+        .node-step1 .flow-subtitle {
+            color: #BFDBFE;
+        }
+
+        /* Step 2: White Box with Blue Border */
+        .node-step2 {
+            background: #FFFFFF;
+            color: #0F172A;
+            border: 2px solid #3B82F6;
+        }
+        .node-step2 .flow-subtitle {
+            color: #475569;
+        }
+
+        /* Step 3: Risk Fusion Engine */
+        .node-step3 {
+            background: #FFFFFF;
+            color: #0F172A;
+            border: 2px solid #3B82F6;
+        }
+        .node-step3 .flow-subtitle {
+            color: #475569;
+        }
+
+        /* Step 4: Decision & Alternatives */
+        .node-step4 {
+            background: #FFFFFF;
+            color: #0F172A;
+            border: 2px solid #3B82F6;
+        }
+        .node-step4 .flow-subtitle {
+            color: #475569;
+        }
+
+        /* Step 5: Red / Safety Alert Dashboard Node */
+        .node-step5 {
+            background: #DC2626;
+            color: #FFFFFF;
+            border: 2px solid #DC2626;
+        }
+        .node-step5 .flow-subtitle {
+            color: #FEE2E2;
+        }
+
+        /* Connecting Downward Arrow */
+        .flow-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 24px;
+        }
+
+        .flow-arrow svg {
+            width: 26px;
+            height: 26px;
+            fill: #3B82F6;
+        }
+
+        /* ── Slide Footer ────────────────────────────────────────── */
+        .slide-footer {
+            height: 40px;
+            padding: 0 70px 18px 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 13px;
+            color: #94A3B8;
+            font-weight: 500;
+        }
+
+        .footer-page-number {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 16px;
+            font-weight: 700;
+            color: #475569;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ═══ TOP HEADER ═════════════════════════════════════════════════ -->
+    <header class="slide-header">
+        <!-- Team Badge (Left) -->
+        <div class="badge-oval">
+            <span class="badge-oval-sub">PROJECT</span>
+            <span class="badge-oval-title">SAFEPASS AI</span>
+        </div>
+
+        <!-- Center Main Title -->
+        <div class="slide-title-container">
+            <h1 class="slide-main-title">TECHNICAL APPROACH</h1>
+            <div class="slide-title-underline"></div>
+        </div>
+
+        <!-- SIH 2026 Logo (Right) -->
+        <div class="sih-logo-wrapper">
+            <!-- Official SIH Bulb / Gear SVG -->
+            <svg class="sih-logo-icon" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Outer gears / rays -->
+                <circle cx="50" cy="46" r="32" stroke="#EA580C" stroke-width="4" stroke-dasharray="6 6"/>
+                <!-- Bulb outline -->
+                <path d="M50 18 C37 18 28 27 28 39 C28 47 33 54 37 59 L37 68 C37 70 39 72 41 72 L59 72 C61 72 63 70 63 68 L63 59 C67 54 72 47 72 39 C72 27 63 18 50 18 Z" fill="#FFF7ED" stroke="#1E3A8A" stroke-width="3"/>
+                <!-- Brain / Circuit Nodes inside -->
+                <circle cx="43" cy="34" r="4" fill="#0D9488"/>
+                <circle cx="57" cy="34" r="4" fill="#EA580C"/>
+                <circle cx="50" cy="46" r="4" fill="#1E3A8A"/>
+                <line x1="43" y1="34" x2="50" y2="46" stroke="#0D9488" stroke-width="2"/>
+                <line x1="57" y1="34" x2="50" y2="46" stroke="#EA580C" stroke-width="2"/>
+                <!-- Bulb base threads -->
+                <line x1="41" y1="76" x2="59" y2="76" stroke="#1E3A8A" stroke-width="3" stroke-linecap="round"/>
+                <line x1="44" y1="81" x2="56" y2="81" stroke="#EA580C" stroke-width="3" stroke-linecap="round"/>
+            </svg>
+            <div class="sih-text-block">
+                <div style="display:flex; gap:5px; align-items:baseline;">
+                    <span class="sih-text-smart">SMART</span>
+                    <span class="sih-text-india">INDIA</span>
+                </div>
+                <span class="sih-text-hackathon">HACKATHON</span>
+                <span class="sih-year">2026</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- ═══ SLIDE BODY: 2 COLUMNS ═════════════════════════════════════ -->
+    <main class="slide-body">
+        
+        <!-- ── LEFT CONTAINER: ALGORITHM & PLATFORM DEVELOPMENT ──────── -->
+        <section class="left-card">
+            <div>
+                <h2 class="section-header-title">Algorithm & Platform Development:</h2>
+
+                <!-- Block 1: Algorithm -->
+                <div class="sub-block">
+                    <h3 class="sub-block-title">Corridor Risk Index (CRI) Algorithm:</h3>
+                    <p class="sub-block-content">
+                        SafePass AI implements a <strong>5-factor multi-parametric risk engine</strong> evaluating highway safety per 200m road segment. The engine dynamically calculates real-time risk before travel:
+                    </p>
+                    
+                    <div class="formula-card">
+                        <span>CRI = 0.35(A) + 0.25(W) + 0.20(G) + 0.12(T) + 0.08(I)</span>
+                        <span class="formula-tag">0.0 – 10.0 INDEX</span>
+                    </div>
+
+                    <p class="sub-block-content" style="font-size:13px; line-height:1.45;">
+                        • <strong>Accident History (A - 35%)</strong>: Distance-decay spatial proximity to MoRTH/NHAI blackspots and historical annual fatalities.<br>
+                        • <strong>Weather Hazard (W - 25%)</strong>: Real-time Open-Meteo satellite weather (rainfall aquaplaning, fog visibility, wind gusts).<br>
+                        • <strong>Road Geometry (G - 20%)</strong>: Mountainous ghat hairpin bends, steep descent gradients, speed limits, and lane widths.<br>
+                        • <strong>Temporal Diurnal (T - 12%)</strong>: MoRTH peak fatigue night-driving curve (18:00–04:00) & monsoon spikes.<br>
+                        • <strong>Infrastructure (I - 8%)</strong>: Median separation barriers, road shoulder availability, and solar illumination.
+                    </p>
+                </div>
+
+                <!-- Block 2: Platform -->
+                <div class="sub-block" style="margin-top:14px;">
+                    <h3 class="sub-block-title">Platform & Geospatial Architecture:</h3>
+                    <p class="sub-block-content">
+                        <strong>Frontend:</strong> Google Maps-style progressive navigation built with <strong>MapLibre GL JS</strong> (token-free vector & Esri World Street tiles), Web Speech API for real-time spoken voice driver advisories, and Geolocation radar GPS tracking.<br>
+                        <strong>Backend:</strong> High-throughput <strong>Python 3.13 (FastAPI ASGI)</strong> engine integrated with OSRM routing and Haversine spatial geodesic matrices for multi-route corridor optimization.
+                    </p>
+                </div>
+
+                <!-- Block 3: Security & Resilience -->
+                <div class="sub-block" style="margin-top:14px; margin-bottom:0;">
+                    <h3 class="sub-block-title">Resilience & Emergency Telemetry:</h3>
+                    <p class="sub-block-content">
+                        <strong>Supabase Cloud Database</strong> with Row Level Security (RLS) stores trip history and crowdsourced hazard reports. Features <strong>zero-cold-start local resilient fallback</strong> for offline operations and instant <strong>1-click SOS telemetry</strong> dispatching live GPS coordinates to 112 / 1033 NHAI emergency patrols.
+                    </p>
+                </div>
+
+                <!-- Block 4: Core Stack Badges -->
+                <div class="tech-tags-container">
+                    <div class="tech-tags-label">Engine & Platform Technologies:</div>
+                    <div class="tech-tags-row">
+                        <span class="tech-tag">⚡ FastAPI (ASGI)</span>
+                        <span class="tech-tag">🐍 Python 3.13</span>
+                        <span class="tech-tag">🗺️ MapLibre GL JS</span>
+                        <span class="tech-tag orange">☁️ Supabase (RLS)</span>
+                        <span class="tech-tag">🔊 Web Speech API</span>
+                        <span class="tech-tag">📍 GPS Geolocation</span>
+                        <span class="tech-tag">🛣️ OSRM Engine</span>
+                        <span class="tech-tag orange">🛰️ Open-Meteo</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── RIGHT CONTAINER: ARCHITECTURE PIPELINE FLOWCHART ──────── -->
+        <section class="right-flowchart">
+            
+            <!-- Step 1: Ingestion -->
+            <div class="flow-node node-step1">
+                <div class="flow-title">Multi-Source Data Ingestion</div>
+                <div class="flow-subtitle">(MoRTH Blackspots · Open-Meteo Live Weather · OSRM Road Geometry · Citizen Reports)</div>
+            </div>
+
+            <div class="flow-arrow">
+                <svg viewBox="0 0 24 24"><path d="M12 18l-6-6h4V4h4v8h4l-6 6z"/></svg>
+            </div>
+
+            <!-- Step 2: Geospatial Discretization -->
+            <div class="flow-node node-step2">
+                <div class="flow-title">Geospatial Corridor Discretization</div>
+                <div class="flow-subtitle">(Haversine N-segment slicing · Ghat & hairpin classification · Fog sector tagging)</div>
+            </div>
+
+            <div class="flow-arrow">
+                <svg viewBox="0 0 24 24"><path d="M12 18l-6-6h4V4h4v8h4l-6 6z"/></svg>
+            </div>
+
+            <!-- Step 3: Risk Fusion Engine -->
+            <div class="flow-node node-step3">
+                <div class="flow-title">CRI Multi-Factor Risk Fusion</div>
+                <div class="flow-subtitle">(Weighted accident severity + Live satellite weather + 24h temporal diurnal curve)</div>
+            </div>
+
+            <div class="flow-arrow">
+                <svg viewBox="0 0 24 24"><path d="M12 18l-6-6h4V4h4v8h4l-6 6z"/></svg>
+            </div>
+
+            <!-- Step 4: Multi-Corridor Decision -->
+            <div class="flow-node node-step4">
+                <div class="flow-title">Dynamic Multi-Route Safe Corridor Selection</div>
+                <div class="flow-subtitle">(Simultaneous evaluation: Recommended Safest Corridor vs Alternative Express Highways)</div>
+            </div>
+
+            <div class="flow-arrow">
+                <svg viewBox="0 0 24 24"><path d="M12 18l-6-6h4V4h4v8h4l-6 6z"/></svg>
+            </div>
+
+            <!-- Step 5: Dashboard & SOS Dispatch -->
+            <div class="flow-node node-step5">
+                <div class="flow-title">SafePass Driver Map & Emergency SOS Dispatch</div>
+                <div class="flow-subtitle">(Interactive MapLibre Canvas · Voice Guidance Radar · 112/1033 Telemetry · Supabase Cloud)</div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- ═══ SLIDE FOOTER ═══════════════════════════════════════════════ -->
+    <footer class="slide-footer">
+        <span>SafePass AI — Predictive Corridor Risk Intelligence for Indian Highways</span>
+        <span class="footer-page-number">3</span>
+    </footer>
+
+</body>
+</html>
