@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap');
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    width: 1920px;
+    height: 1080px;
+    background-color: #FFFFFF;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: #1F2937;
+    padding: 60px 85px 50px 85px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+    position: relative;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Header */
+  .header {
+    margin-bottom: 25px;
+  }
+  .title {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 40px;
+    font-weight: 800;
+    color: #111827;
+    letter-spacing: -0.02em;
+    margin-bottom: 6px;
+  }
+  .subtitle {
+    font-size: 17px;
+    color: #4B5563;
+    font-weight: 500;
+  }
+
+  /* THE GAP Section */
+  .gap-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 30px;
+  }
+  .gap-left {
+    max-width: 1250px;
+  }
+  .label-orange {
+    font-size: 13px;
+    font-weight: 800;
+    color: #EA580C;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .gap-text {
+    font-size: 21px;
+    line-height: 1.45;
+    color: #4B5563;
+    font-weight: 400;
+  }
+  .gap-text strong {
+    color: #111827;
+    font-weight: 700;
+  }
+
+  .gap-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 320px;
+    padding-left: 20px;
+  }
+  .stat-zero {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 88px;
+    font-weight: 800;
+    color: #EA580C;
+    line-height: 0.85;
+    margin-bottom: 8px;
+  }
+  .stat-caption {
+    font-size: 13.5px;
+    color: #6B7280;
+    line-height: 1.35;
+    font-weight: 500;
+  }
+
+  /* OUR SOLUTION Container */
+  .solution-card-wrapper {
+    position: relative;
+    margin-bottom: 40px;
+  }
+  .solution-badge {
+    position: absolute;
+    top: -14px;
+    left: 45px;
+    background: #EA580C;
+    color: #FFFFFF;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    padding: 6px 16px;
+    border-radius: 6px;
+    text-transform: uppercase;
+    box-shadow: 0 4px 10px rgba(234, 88, 12, 0.35);
+    z-index: 10;
+  }
+  .solution-card {
+    background: #1E293B;
+    border-radius: 16px;
+    padding: 42px 48px;
+    display: flex;
+    justify-content: space-between;
+    box-shadow: 0 16px 36px -8px rgba(15, 23, 42, 0.25);
+    border: 1px solid #334155;
+  }
+  .solution-left {
+    width: 42%;
+    padding-right: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .solution-title {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: #FFFFFF;
+    line-height: 1.3;
+    margin-bottom: 14px;
+    letter-spacing: -0.01em;
+  }
+  .solution-sub {
+    font-size: 14.5px;
+    color: #D1D5DB;
+    font-weight: 400;
+  }
+
+  .solution-right {
+    width: 58%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 40px;
+    row-gap: 24px;
+    align-items: center;
+  }
+  .feature-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .accent-bar {
+    width: 4px;
+    height: 38px;
+    background: #EA580C;
+    border-radius: 2px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .feature-text {
+    display: flex;
+    flex-direction: column;
+  }
+  .feature-title {
+    font-size: 15.5px;
+    font-weight: 700;
+    color: #FFFFFF;
+    margin-bottom: 4px;
+  }
+  .feature-desc {
+    font-size: 13px;
+    color: #D1D5DB;
+    line-height: 1.35;
+  }
+
+  /* INNOVATION WE MADE */
+  .innovations-wrapper {
+    margin-bottom: 20px;
+  }
+  .innovations-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    column-gap: 36px;
+    margin-top: 14px;
+  }
+  .innov-col {
+    display: flex;
+    flex-direction: column;
+  }
+  .innov-num {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 46px;
+    font-weight: 800;
+    color: #FDBA74;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .innov-title {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 6px;
+  }
+  .innov-desc {
+    font-size: 13px;
+    color: #6B7280;
+    line-height: 1.45;
+  }
+
+  /* Slide Number */
+  .slide-number {
+    position: absolute;
+    bottom: 35px;
+    right: 65px;
+    font-size: 14px;
+    color: #9CA3AF;
+    font-weight: 500;
+  }
+</style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="title">Innovation & Solution</div>
+    <div class="subtitle">Why existing navigation falls short — and what we built instead</div>
+  </div>
+
+  <!-- THE GAP -->
+  <div class="gap-section">
+    <div class="gap-left">
+      <div class="label-orange">THE GAP</div>
+      <div class="gap-text">
+        Mainstream apps rank routes by <strong>time and distance alone</strong> — fog, monsoon flooding, blind ghat curves and known blackspots stay invisible until you’re already in them.
+      </div>
+    </div>
+    <div class="gap-right">
+      <div class="stat-zero">0</div>
+      <div class="stat-caption">India-specific risk factors most navigation apps model</div>
+    </div>
+  </div>
+
+  <!-- OUR SOLUTION -->
+  <div class="solution-card-wrapper">
+    <div class="solution-badge">OUR SOLUTION</div>
+    <div class="solution-card">
+      <div class="solution-left">
+        <div class="solution-title">SafePass Maps replaces guesswork with a predictive Safety Score.</div>
+        <div class="solution-sub">Not just point A to B — built for Indian highway realities.</div>
+      </div>
+      <div class="solution-right">
+        <!-- Item 1 -->
+        <div class="feature-item">
+          <div class="accent-bar"></div>
+          <div class="feature-text">
+            <div class="feature-title">Predictive Scoring</div>
+            <div class="feature-desc">every route ranked 0–10 on real safety risk, not just ETA</div>
+          </div>
+        </div>
+        <!-- Item 2 -->
+        <div class="feature-item">
+          <div class="accent-bar"></div>
+          <div class="feature-text">
+            <div class="feature-title">Full Risk Fusion</div>
+            <div class="feature-desc">weather, accident history, road geometry &amp; time-of-day in one score</div>
+          </div>
+        </div>
+        <!-- Item 3 -->
+        <div class="feature-item">
+          <div class="accent-bar"></div>
+          <div class="feature-text">
+            <div class="feature-title">Live Hazard Network</div>
+            <div class="feature-desc">citizen reports, AI-classified and published in real time</div>
+          </div>
+        </div>
+        <!-- Item 4 -->
+        <div class="feature-item">
+          <div class="accent-bar"></div>
+          <div class="feature-text">
+            <div class="feature-title">Built-In Emergency Response</div>
+            <div class="feature-desc">one-tap SOS, no separate app required</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INNOVATION WE MADE -->
+  <div class="innovations-wrapper">
+    <div class="label-orange">INNOVATION WE MADE</div>
+    <div class="innovations-grid">
+      <!-- Col 1 -->
+      <div class="innov-col">
+        <div class="innov-num">01</div>
+        <div class="innov-title">Predictive, Not Reactive</div>
+        <div class="innov-desc">Forecasts corridor risk before you drive, not after</div>
+      </div>
+      <!-- Col 2 -->
+      <div class="innov-col">
+        <div class="innov-num">02</div>
+        <div class="innov-title">Explainable by Design</div>
+        <div class="innov-desc">SHAP shows exactly why a route scored the way it did</div>
+      </div>
+      <!-- Col 3 -->
+      <div class="innov-col">
+        <div class="innov-num">03</div>
+        <div class="innov-title">Citizen + AI Hybrid</div>
+        <div class="innov-desc">Real hazards, AI-classified in seconds, always current</div>
+      </div>
+      <!-- Col 4 -->
+      <div class="innov-col">
+        <div class="innov-num">04</div>
+        <div class="innov-title">India-Calibrated Model</div>
+        <div class="innov-desc">Trained on the conditions global maps were never built for</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide Number -->
+  <div class="slide-number">3</div>
+
+</body>
+</html>
