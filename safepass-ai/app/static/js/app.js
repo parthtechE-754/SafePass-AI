@@ -431,6 +431,20 @@ function renderMultiRoutesOnMap(routes, activeIdx) {
                 }
             });
 
+            // Alternate route casing (subtle white outline for high contrast against satellite/topo)
+            const altCasingId = `alt-casing-${idx}`;
+            map.addLayer({
+                id: altCasingId,
+                type: 'line',
+                source: altSrcId,
+                layout: { 'line-cap': 'round', 'line-join': 'round' },
+                paint: {
+                    'line-color': '#FFFFFF',
+                    'line-width': 7,
+                    'line-opacity': 0.85,
+                }
+            });
+
             // Alternate route visible line
             map.addLayer({
                 id: altLayerId,
@@ -438,9 +452,9 @@ function renderMultiRoutesOnMap(routes, activeIdx) {
                 source: altSrcId,
                 layout: { 'line-cap': 'round', 'line-join': 'round' },
                 paint: {
-                    'line-color': '#64748B',
-                    'line-width': 4.5,
-                    'line-opacity': 0.7,
+                    'line-color': '#5F6368',
+                    'line-width': 4,
+                    'line-opacity': 0.9,
                     'line-dasharray': [2, 2],
                 }
             });
@@ -453,7 +467,7 @@ function renderMultiRoutesOnMap(routes, activeIdx) {
                 layout: { 'line-cap': 'round', 'line-join': 'round' },
                 paint: {
                     'line-color': 'transparent',
-                    'line-width': 20,
+                    'line-width': 22,
                     'line-opacity': 0.01,
                 }
             });
@@ -464,13 +478,16 @@ function renderMultiRoutesOnMap(routes, activeIdx) {
             map.on('mouseenter', altHitboxId, () => { map.getCanvas().style.cursor = 'pointer'; });
             map.on('mouseleave', altHitboxId, () => { map.getCanvas().style.cursor = ''; });
 
-            routeLayers.push(altSrcId, altLayerId, altHitboxId);
+            routeLayers.push(altSrcId, altCasingId, altLayerId, altHitboxId);
         }
-
-        // Place on-map floating ETA & Risk Pill at route midpoint (Google Maps style)
-        const midPoint = points[Math.floor(points.length / 2)];
-        createOnMapRoutePill(route, idx, isActive, midPoint);
     });
+
+    // Place single collision-aware ETA & Risk Pill on active route
+    const activeRoute = routes[activeIdx];
+    if (activeRoute && activeRoute.route_points && activeRoute.route_points.length > 0) {
+        const midPoint = activeRoute.route_points[Math.floor(activeRoute.route_points.length / 2)];
+        createOnMapRoutePill(activeRoute, activeIdx, true, midPoint);
+    }
 
     // Add origin and destination Google Maps style markers
     addOriginDestMarkers(routes[0].route_points[0], routes[0].route_points[routes[0].route_points.length - 1]);
@@ -995,9 +1012,18 @@ function startNavigationPreview() {
     const points = route.route_points;
     if (points.length < 2) return;
 
+    // Hide UI chrome for full-screen immersive navigation
+    const dirCard = document.getElementById('directions-card');
+    if (dirCard) dirCard.style.display = 'none';
+    const rail = document.getElementById('map-icon-rail');
+    if (rail) rail.style.display = 'none';
+    const sosFab = document.getElementById('sos-fab-main');
+    if (sosFab) sosFab.style.display = 'none';
+    const leg = document.getElementById('legend-widget');
+    if (leg) leg.style.display = 'none';
+
     // Show simulation HUD
-    document.getElementById('simulation-hud').style.display = 'flex';
-    document.getElementById('routes-drawer').classList.add('collapsed');
+    document.getElementById('simulation-hud').style.display = 'block';
 
     simStep = 0;
     const totalSteps = points.length;
@@ -1023,7 +1049,7 @@ function startNavigationPreview() {
         .setLngLat([points[0].lng, points[0].lat])
         .addTo(map);
 
-    map.flyTo({ center: [points[0].lng, points[0].lat], zoom: 12, duration: 1000 });
+    map.flyTo({ center: [points[0].lng, points[0].lat], zoom: 13, duration: 1000 });
 
     speakAlert(`Safety navigation active for ${route.name}. Drive with caution.`);
 
@@ -1072,6 +1098,17 @@ function stopNavigationPreview() {
     if (simInterval) clearInterval(simInterval);
     document.getElementById('simulation-hud').style.display = 'none';
     if (simCarMarker) simCarMarker.remove();
+
+    // Restore UI chrome
+    const dirCard = document.getElementById('directions-card');
+    if (dirCard) dirCard.style.display = 'flex';
+    const rail = document.getElementById('map-icon-rail');
+    if (rail) rail.style.display = 'flex';
+    const sosFab = document.getElementById('sos-fab-main');
+    if (sosFab) sosFab.style.display = 'flex';
+    const leg = document.getElementById('legend-widget');
+    if (leg) leg.style.display = 'block';
+
     recenterRoute();
 }
 
@@ -1101,7 +1138,10 @@ function checkProximityHazards(lat, lng) {
         const distRounded = minDistance.toFixed(1);
         const warningMsg = `Approaching ${nearest.name} in ${distRounded} km! High crash history (${nearest.annual_fatalities || 20} fatalities). Reduce speed to ${nearest.speed_limit || 50} km/h!`;
 
-        if (alertBanner) alertBanner.style.background = 'rgba(220, 38, 38, 0.9)';
+        if (alertBanner) {
+            alertBanner.style.display = 'flex';
+            alertBanner.style.background = 'var(--safety-red)';
+        }
         if (alertIcon) alertIcon.textContent = '🚨';
         if (alertText) alertText.textContent = warningMsg;
 
@@ -1110,13 +1150,15 @@ function checkProximityHazards(lat, lng) {
         const distRounded = minDistance.toFixed(1);
         const factors = (nearest.risk_factors || []).slice(0, 2).join(', ').replace(/_/g, ' ');
 
-        if (alertBanner) alertBanner.style.background = 'rgba(249, 115, 22, 0.85)';
+        if (alertBanner) {
+            alertBanner.style.display = 'flex';
+            alertBanner.style.background = 'var(--safety-orange)';
+        }
         if (alertIcon) alertIcon.textContent = '⚠️';
         if (alertText) alertText.textContent = `Caution: ${nearest.highway || 'Corridor'} hazard zone ${distRounded} km ahead. Watch for ${factors}.`;
     } else {
-        if (alertBanner) alertBanner.style.background = 'rgba(30, 41, 59, 0.85)';
-        if (alertIcon) alertIcon.textContent = '🛡️';
-        if (alertText) alertText.textContent = 'Corridor monitored: Surface stable, no critical blackspot within 6 km.';
+        // Auto-dismiss hazard toast when safe
+        if (alertBanner) alertBanner.style.display = 'none';
     }
 }
 
@@ -1794,27 +1836,11 @@ function setupHazardNlpListeners() {
                 });
                 if (!res.ok) return;
                 const data = await res.json();
-                if (data && data.suggested_category) {
                     // 1. Auto-select category (editable by user)
-                    const typeSel = document.getElementById('report-type');
-                    if (typeSel) {
-                        for (let opt of typeSel.options) {
-                            if (opt.value === data.suggested_category) {
-                                typeSel.value = opt.value;
-                                break;
-                            }
-                        }
-                    }
+                    selectHazardCategory(data.suggested_category);
 
-                    // 2. Auto-select closest severity score (editable by user)
-                    const sevSel = document.getElementById('report-severity');
-                    if (sevSel) {
-                        const s = data.suggested_severity;
-                        if (s <= 5.0) sevSel.value = "4.0";
-                        else if (s <= 7.5) sevSel.value = "6.5";
-                        else if (s <= 9.0) sevSel.value = "8.5";
-                        else sevSel.value = "9.5";
-                    }
+                    // 2. Auto-select closest severity score slider (editable by user)
+                    handleSeveritySlider(data.suggested_severity);
 
                     // 3. Display interactive AI suggestion banner
                     const box = document.getElementById('ai-hazard-nlp-box');
@@ -1844,6 +1870,50 @@ function setupHazardNlpListeners() {
     if (titleInput && !titleInput.dataset.nlpBound) {
         titleInput.addEventListener('input', triggerNlpClassification);
         titleInput.dataset.nlpBound = 'true';
+    }
+}
+
+function selectHazardCategory(catValue) {
+    document.querySelectorAll('.category-tile').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.value === catValue);
+    });
+    const typeSel = document.getElementById('report-type');
+    if (typeSel) {
+        typeSel.value = catValue;
+    }
+}
+
+function handleSeveritySlider(val) {
+    const num = parseFloat(val);
+    const slider = document.getElementById('report-severity-slider');
+    if (slider) slider.value = num;
+
+    const pill = document.getElementById('severity-val-pill');
+    if (pill) {
+        if (num >= 8.0) {
+            pill.textContent = `${num.toFixed(1)} · Critical Emergency`;
+            pill.style.background = '#FCE8E6';
+            pill.style.color = '#D93025';
+        } else if (num >= 6.5) {
+            pill.textContent = `${num.toFixed(1)} · High Danger`;
+            pill.style.background = '#FEF7E0';
+            pill.style.color = '#B06000';
+        } else if (num >= 4.5) {
+            pill.textContent = `${num.toFixed(1)} · Moderate`;
+            pill.style.background = '#FEF7E0';
+            pill.style.color = '#B06000';
+        } else {
+            pill.textContent = `${num.toFixed(1)} · Low Risk`;
+            pill.style.background = '#E6F4EA';
+            pill.style.color = '#137333';
+        }
+    }
+    const sevSel = document.getElementById('report-severity');
+    if (sevSel) {
+        if (num >= 8.5) sevSel.value = "9.5";
+        else if (num >= 7.0) sevSel.value = "8.5";
+        else if (num >= 5.0) sevSel.value = "6.5";
+        else sevSel.value = "4.0";
     }
 }
 

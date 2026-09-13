@@ -1,44 +1,50 @@
 /* ═══════════════════════════════════════════════════════════════════════
-   SafePass AI — White & Safety Orange Highway Intelligence Theme
-   High-contrast, modern clean white glassmorphism with radiant safety orange
-   accents, multi-route styling, and interactive safety sign markers.
+   SafePass Maps — Google Maps Design System & Tokens
+   Clean, Minimal, Content-First Map Interface with Single Brand Accent
    ═══════════════════════════════════════════════════════════════════════ */
 
-/* ── CSS Variables ──────────────────────────────────────────────────── */
 :root {
-    --bg-primary: #F8FAFC;
-    --bg-secondary: #FFFFFF;
-    --bg-tertiary: #FFF7ED;
-    --bg-card: rgba(255, 255, 255, 0.96);
-    --bg-card-hover: #FFF7ED;
-    --bg-glass: rgba(255, 255, 255, 0.94);
+    /* Base Surfaces */
+    --surface-white: #FFFFFF;
+    --surface-canvas: #F8F9FA;
+    --surface-tonal: #F1F3F4;
+    --surface-hover: #ECEFF1;
 
-    --text-primary: #0F172A;
-    --text-secondary: #475569;
-    --text-muted: #64748B;
+    /* Text Hierarchy */
+    --text-primary: #202124;     /* 87% black */
+    --text-secondary: #5F6368;   /* 60% black */
+    --text-tertiary: #80868B;    /* 40% black */
 
-    --accent-primary: #EA580C;
-    --accent-emerald: #10B981;
-    --accent-orange: #FF6B00;
-    --accent-gradient: linear-gradient(135deg, #FF7A00 0%, #EA580C 100%);
-    --accent-glow: rgba(234, 88, 12, 0.35);
+    /* Single Brand Accent (Highway Orange) */
+    --accent-brand: #EA580C;
+    --accent-tint: #FFF7ED;
+    --accent-border: #FFEDD5;
 
-    /* Risk Colors */
-    --risk-low: #16A34A;
-    --risk-moderate: #D97706;
-    --risk-high: #EA580C;
-    --risk-critical: #DC2626;
+    /* Semantic Safety Scale (strictly for route lines & score badges) */
+    --safety-green: #137333;     /* Safe: CRI 0 - 4.5 */
+    --safety-green-bg: #E6F4EA;
+    --safety-yellow: #F9AB00;    /* Moderate: CRI 4.5 - 6.0 */
+    --safety-yellow-bg: #FEF7E0;
+    --safety-orange: #EA8600;    /* High Risk: CRI 6.0 - 7.5 */
+    --safety-orange-bg: #FCE8E6;
+    --safety-red: #D93025;       /* Critical: CRI 7.5+ & Emergency */
+    --safety-red-bg: #FCE8E6;
 
-    --border-subtle: rgba(234, 88, 12, 0.18);
-    --border-focus: rgba(234, 88, 12, 0.6);
+    /* Borders & Outlines */
+    --border-subtle: #E8EAED;
+    --border-strong: #DADCE0;
 
-    --shadow-card: 0 14px 34px -4px rgba(234, 88, 12, 0.12), 0 4px 16px rgba(15, 23, 42, 0.08);
-    --shadow-popup: 0 16px 36px rgba(15, 23, 42, 0.15);
+    /* Elevation & Shadows (Google Material Tier) */
+    --elevation-1: 0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15);
+    --elevation-2: 0 1px 3px 0 rgba(60,64,67,0.3), 0 4px 8px 3px rgba(60,64,67,0.15);
+    --elevation-3: 0 2px 6px 2px rgba(60,64,67,0.15), 0 8px 24px 4px rgba(60,64,67,0.2);
+    --elevation-fab: 0 4px 16px 0 rgba(217, 48, 37, 0.4), 0 1px 3px 0 rgba(60,64,67,0.3);
 
+    /* Radii */
     --radius-sm: 8px;
     --radius-md: 12px;
     --radius-lg: 16px;
-    --radius-xl: 22px;
+    --radius-pill: 9999px;
 }
 
 *, *::before, *::after {
@@ -51,22 +57,63 @@ html, body {
     width: 100%;
     height: 100%;
     overflow: hidden;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    background: #F8FAFC;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--surface-canvas);
     color: var(--text-primary);
     -webkit-font-smoothing: antialiased;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════
-   Google Maps Design Language Architecture for SafePass Maps
-   Map-First, Floating Elevated Cards, Neutral Base with Highway Orange Accent
-   ═══════════════════════════════════════════════════════════════════════ */
+/* ── Standard Button Primitives ────────────────────────────────────────── */
+.btn-primary {
+    background: var(--accent-brand);
+    color: #FFFFFF;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
 
-/* ── Fullscreen Map Viewport (Map-First) ────────────────────────────────── */
+.btn-primary:hover {
+    background: #C2410C;
+    box-shadow: 0 2px 8px rgba(234, 88, 12, 0.35);
+}
+
+.btn-primary:active {
+    transform: scale(0.98);
+}
+
+.btn-secondary {
+    background: var(--surface-tonal);
+    color: var(--text-primary);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.btn-secondary:hover {
+    background: var(--surface-hover);
+    border-color: #BDC1C6;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   MAP VIEWPORT & FULL-BLEED CANVAS
+   ═══════════════════════════════════════════════════════════════════════ */
 .map-viewport {
     position: fixed;
-    top: 0;
-    left: 0;
+    inset: 0;
     width: 100vw;
     height: 100vh;
     overflow: hidden;
@@ -78,7 +125,9 @@ html, body {
     height: 100%;
 }
 
-/* ── 1. Floating Search & Route Card (Top-Left, 380px) ─────────────────── */
+/* ═══════════════════════════════════════════════════════════════════════
+   1. FLOATING SEARCH & ROUTE PANEL (Top-Left, 380px)
+   ═══════════════════════════════════════════════════════════════════════ */
 .gmaps-floating-card {
     position: absolute;
     top: 16px;
@@ -86,32 +135,37 @@ html, body {
     width: 380px;
     max-width: calc(100vw - 32px);
     max-height: calc(100vh - 32px);
-    background: #FFFFFF;
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04);
+    background: var(--surface-white);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--elevation-2);
     z-index: 30;
     padding: 16px;
     display: flex;
     flex-direction: column;
     gap: 12px;
     overflow-y: auto;
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    overscroll-behavior: contain;
 }
 
+/* Slim scrollbar for left panel */
 .gmaps-floating-card::-webkit-scrollbar {
-    width: 4px;
+    width: 5px;
+}
+.gmaps-floating-card::-webkit-scrollbar-track {
+    background: transparent;
 }
 .gmaps-floating-card::-webkit-scrollbar-thumb {
-    background: #E2E8F0;
+    background: var(--border-strong);
     border-radius: 4px;
 }
 
-/* Brand header */
+/* Brand & Status Header */
 .gmaps-card-brand {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    padding-bottom: 2px;
 }
 
 .brand-left {
@@ -121,15 +175,14 @@ html, body {
 }
 
 .brand-name {
-    font-size: 16px;
+    font-size: 17px;
     font-weight: 800;
-    color: #0F172A;
-    letter-spacing: -0.4px;
+    color: var(--text-primary);
+    letter-spacing: -0.3px;
 }
 
 .brand-accent {
-    color: #EA580C;
-    font-weight: 700;
+    color: var(--accent-brand);
 }
 
 .brand-status-pills {
@@ -142,143 +195,128 @@ html, body {
     display: flex;
     align-items: center;
     gap: 5px;
-    background: #F8FAFC;
-    border: 1px solid #E2E8F0;
-    border-radius: 999px;
     padding: 3px 8px;
+    background: var(--surface-canvas);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-pill);
     font-size: 11px;
     font-weight: 600;
-    color: #475569;
+    color: var(--text-secondary);
 }
 
 .status-pill.weather-pill {
-    background: #FFF7ED;
-    border-color: #FED7AA;
-    color: #EA580C;
+    background: var(--surface-canvas);
 }
 
 .live-pulse {
     width: 7px;
     height: 7px;
     border-radius: 50%;
-    background: #16A34A;
-    box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.6);
-    animation: gpsPulse 2s infinite;
+    background: var(--safety-green);
+    animation: livePulse 2s infinite;
 }
 
-@keyframes gpsPulse {
-    0% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.6); }
-    70% { box-shadow: 0 0 0 5px rgba(22, 163, 74, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0); }
+@keyframes livePulse {
+    0% { transform: scale(0.95); opacity: 0.8; }
+    70% { transform: scale(1.3); opacity: 0.3; }
+    100% { transform: scale(0.95); opacity: 0.8; }
 }
 
-/* Micro HUD */
+/* Micro HUD strip */
 .card-hud-strip {
     display: flex;
     align-items: center;
-    gap: 6px;
-    background: #FFF7ED;
-    border: 1px solid #FFEDD5;
-    border-radius: 8px;
-    padding: 5px 9px;
+    gap: 8px;
+    background: var(--surface-canvas);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    padding: 6px 10px;
     font-size: 11.5px;
-    color: #C2410C;
-    font-weight: 500;
+    color: var(--text-secondary);
 }
 
 .hud-status-dot {
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: #EA580C;
+    background: var(--accent-brand);
     flex-shrink: 0;
 }
 
 .hud-text {
-    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-/* Segmented Control for Travel Modes */
-.travel-modes-bar.segmented-control {
-    background: #F1F5F9;
-    border-radius: 999px;
+/* Segmented Control for Transport Modes */
+.segmented-control {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    background: var(--surface-tonal);
+    border-radius: var(--radius-pill);
     padding: 3px;
-    display: flex;
     gap: 2px;
-    border: 1px solid #E2E8F0;
 }
 
-.segmented-control .mode-btn {
-    flex: 1;
+.mode-btn {
     border: none;
     background: transparent;
     padding: 6px 4px;
-    border-radius: 999px;
-    font-size: 12px;
+    border-radius: var(--radius-pill);
+    font-size: 11.5px;
     font-weight: 600;
-    color: #64748B;
+    color: var(--text-secondary);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 4px;
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.15s ease;
 }
 
-.segmented-control .mode-btn:hover {
-    color: #0F172A;
+.mode-btn:hover {
+    color: var(--text-primary);
 }
 
-.segmented-control .mode-btn.active {
-    background: #FFFFFF;
-    color: #EA580C;
-    font-weight: 700;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+.mode-btn.active {
+    background: var(--surface-white);
+    color: var(--text-primary);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
 }
 
-/* Direction Inputs Container */
+/* Connected Origin/Destination Inputs */
 .gmaps-direction-inputs {
     display: flex;
     align-items: center;
-    background: #F8FAFC;
-    border: 1px solid #E2E8F0;
-    border-radius: 12px;
-    padding: 10px 12px;
-    gap: 10px;
-    transition: border-color 0.2s;
-}
-
-.gmaps-direction-inputs:focus-within {
-    border-color: #EA580C;
-    background: #FFFFFF;
-    box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.12);
+    background: var(--surface-canvas);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-md);
+    padding: 8px 10px;
+    gap: 8px;
+    position: relative;
 }
 
 .inputs-left-connector {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    width: 16px;
-    flex-shrink: 0;
+    gap: 2px;
+    padding-top: 4px;
 }
 
 .pin-origin-dot {
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background: #16A34A;
-    border: 2px solid #FFFFFF;
-    box-shadow: 0 0 0 1.5px #16A34A;
+    border: 2.5px solid #1A73E8;
+    background: #FFFFFF;
 }
 
 .connector-dotted-line {
-    width: 2px;
-    height: 24px;
-    border-left: 2px dotted #94A3B8;
-    margin: 3px 0;
+    width: 1.5px;
+    height: 18px;
+    background: repeating-linear-gradient(to bottom, #9AA0A6 0px, #9AA0A6 3px, transparent 3px, transparent 6px);
 }
 
 .pin-dest-icon {
@@ -291,48 +329,48 @@ html, body {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 0;
+    gap: 4px;
 }
 
 .input-field-wrapper {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
 }
 
 .gmap-input {
+    width: 100%;
     border: none;
     background: transparent;
-    font-size: 13.5px;
+    font-size: 13px;
     font-weight: 600;
-    color: #0F172A;
-    width: 100%;
+    color: var(--text-primary);
     outline: none;
-    padding: 4px 0;
+    font-family: inherit;
+    padding: 3px 0;
 }
 
 .gmap-input::placeholder {
-    color: #94A3B8;
+    color: var(--text-tertiary);
     font-weight: 400;
 }
 
 .input-separator {
     height: 1px;
-    background: #E2E8F0;
-    margin: 6px 0;
+    background: var(--border-subtle);
+    margin: 2px 0;
 }
 
 .input-gps-btn {
+    border: none;
+    background: var(--accent-tint);
+    color: var(--accent-brand);
+    border-radius: 4px;
     font-size: 10px;
     font-weight: 700;
-    color: #EA580C;
-    background: #FFF7ED;
-    border: 1px solid #FFEDD5;
-    border-radius: 6px;
-    padding: 3px 7px;
+    padding: 3px 6px;
     cursor: pointer;
     white-space: nowrap;
-    transition: all 0.15s;
 }
 
 .input-gps-btn:hover {
@@ -342,39 +380,38 @@ html, body {
 .input-clear-btn {
     border: none;
     background: transparent;
-    color: #94A3B8;
+    color: var(--text-tertiary);
     font-size: 12px;
     cursor: pointer;
-    padding: 2px 4px;
+    padding: 2px;
 }
 
 .input-clear-btn:hover {
-    color: #0F172A;
+    color: var(--text-primary);
 }
 
 .swap-locations-btn {
-    width: 34px;
-    height: 34px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
-    border: 1px solid #E2E8F0;
-    background: #FFFFFF;
-    color: #64748B;
-    cursor: pointer;
+    border: 1px solid var(--border-subtle);
+    background: var(--surface-white);
+    color: var(--text-secondary);
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    cursor: pointer;
     flex-shrink: 0;
-    transition: all 0.2s ease;
+    transition: all 0.15s ease;
 }
 
 .swap-locations-btn:hover {
-    border-color: #EA580C;
-    color: #EA580C;
+    background: var(--surface-hover);
+    color: var(--text-primary);
     transform: rotate(180deg);
 }
 
-/* Fast Corridors Presets */
+/* Fast Corridor Presets Chips */
 .presets-scroll-bar {
     display: flex;
     gap: 6px;
@@ -382,38 +419,37 @@ html, body {
     padding-bottom: 2px;
     scrollbar-width: none;
 }
-
 .presets-scroll-bar::-webkit-scrollbar {
     display: none;
 }
 
 .preset-pill {
-    border: 1px solid #E2E8F0;
-    background: #FFFFFF;
-    color: #475569;
-    border-radius: 999px;
-    font-size: 11px;
-    font-weight: 600;
+    border: 1px solid var(--border-strong);
+    background: var(--surface-white);
+    border-radius: var(--radius-pill);
     padding: 4px 10px;
-    white-space: nowrap;
+    font-size: 11.5px;
+    font-weight: 500;
+    color: var(--text-secondary);
     cursor: pointer;
+    white-space: nowrap;
     transition: all 0.15s ease;
 }
 
 .preset-pill:hover {
-    border-color: #FED7AA;
-    color: #EA580C;
-    background: #FFF7ED;
+    border-color: #BDC1C6;
+    background: var(--surface-canvas);
+    color: var(--text-primary);
 }
 
 .preset-pill.active {
-    border-color: #EA580C;
-    background: #FFF7ED;
-    color: #EA580C;
-    font-weight: 700;
+    background: var(--accent-tint);
+    border-color: var(--accent-brand);
+    color: var(--accent-brand);
+    font-weight: 600;
 }
 
-/* Departure & Compute Action Row */
+/* Action Row (Departure time & Compute button) */
 .gmap-action-row {
     display: flex;
     gap: 8px;
@@ -421,15 +457,14 @@ html, body {
 }
 
 .departure-time-select {
-    flex: 1;
-    border: 1px solid #E2E8F0;
-    background: #F8FAFC;
-    border-radius: 10px;
-    padding: 0 8px;
     display: flex;
     align-items: center;
     gap: 4px;
-    height: 38px;
+    background: var(--surface-canvas);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    padding: 6px 8px;
+    flex: 1;
 }
 
 .dep-icon {
@@ -439,39 +474,23 @@ html, body {
 .gmap-select {
     border: none;
     background: transparent;
+    outline: none;
     font-size: 12px;
     font-weight: 600;
-    color: #334155;
+    color: var(--text-primary);
     width: 100%;
-    outline: none;
     cursor: pointer;
+    font-family: inherit;
 }
 
 .gmap-search-btn {
-    border: none;
-    background: #EA580C;
-    color: #FFFFFF;
-    font-size: 13px;
-    font-weight: 700;
-    border-radius: 10px;
-    padding: 0 16px;
-    height: 38px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    box-shadow: 0 2px 8px rgba(234, 88, 12, 0.28);
-    transition: all 0.2s ease;
+    height: 36px;
+    padding: 0 14px;
+    font-size: 12.5px;
     white-space: nowrap;
 }
 
-.gmap-search-btn:hover {
-    background: #C2410C;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(234, 88, 12, 0.4);
-}
-
-/* Card Routes Section */
+/* ── Route Alternatives Inside Left Panel ──────────────────────────────── */
 .card-routes-section {
     display: flex;
     flex-direction: column;
@@ -479,32 +498,32 @@ html, body {
 
 .section-divider {
     height: 1px;
-    background: #E2E8F0;
-    margin: 8px 0;
+    background: var(--border-subtle);
+    margin: 6px 0 10px 0;
 }
 
 .section-header-mini {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
     margin-bottom: 8px;
 }
 
 .section-title-sm {
     font-size: 11px;
-    font-weight: 800;
-    color: #475569;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    color: var(--text-secondary);
 }
 
 .route-count-badge {
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 700;
-    color: #EA580C;
-    background: #FFF7ED;
-    border: 1px solid #FFEDD5;
-    border-radius: 999px;
+    color: var(--accent-brand);
+    background: var(--accent-tint);
+    border: 1px solid var(--accent-border);
+    border-radius: var(--radius-pill);
     padding: 2px 8px;
 }
 
@@ -512,231 +531,417 @@ html, body {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    max-height: 240px;
-    overflow-y: auto;
-    padding-right: 2px;
 }
 
 .route-option-card {
-    background: #FFFFFF;
-    border: 1.5px solid #E2E8F0;
-    border-radius: 12px;
+    background: var(--surface-white);
+    border: 1.5px solid var(--border-subtle);
+    border-radius: var(--radius-md);
     padding: 10px 12px;
     cursor: pointer;
-    transition: all 0.2s ease;
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
+    transition: all 0.15s ease;
 }
 
 .route-option-card:hover {
-    border-color: #CBD5E1;
-    background: #F8FAFC;
+    border-color: #BDC1C6;
+    background: var(--surface-canvas);
     transform: translateY(-1px);
 }
 
 .route-option-card.active {
-    background: #FFF7ED;
-    border-color: #EA580C;
-    box-shadow: 0 2px 8px rgba(234, 88, 12, 0.15);
+    background: var(--accent-tint);
+    border-color: var(--accent-brand);
+    box-shadow: 0 1px 6px rgba(234, 88, 12, 0.2);
+}
+
+.route-card-left {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.route-card-title-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .route-card-name {
     font-size: 13.5px;
     font-weight: 700;
-    color: #0F172A;
+    color: var(--text-primary);
+}
+
+.route-card-badge {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: var(--radius-pill);
+}
+
+.route-card-badge.safest {
+    background: var(--safety-green-bg);
+    color: var(--safety-green);
+}
+
+.route-card-badge.caution {
+    background: var(--safety-red-bg);
+    color: var(--safety-red);
+}
+
+.route-card-badge.alt {
+    background: var(--surface-tonal);
+    color: var(--text-secondary);
 }
 
 .route-card-metrics {
     font-size: 11.5px;
     font-weight: 500;
-    color: #64748B;
-    margin-top: 3px;
+    color: var(--text-secondary);
     display: flex;
+    align-items: center;
     gap: 5px;
 }
 
 .route-card-time {
-    font-weight: 800;
-    color: #0F172A;
+    font-weight: 700;
+    color: var(--text-primary);
 }
 
 .route-card-safety-score {
     font-size: 11px;
-    font-weight: 800;
+    font-weight: 700;
     padding: 3px 8px;
     border-radius: 6px;
 }
 
-/* ── 2. Floating Bottom Route Summary Sheet ────────────────────────────── */
-.gmaps-bottom-sheet {
-    position: absolute;
-    bottom: 16px;
-    left: 16px;
-    width: 440px;
-    max-width: calc(100vw - 32px);
-    z-index: 25;
-    background: #FFFFFF;
-    border-radius: 16px;
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.04);
-    overflow: hidden;
+/* ── Inline Selected Route Intelligence Details ────────────────────────── */
+.inline-route-details {
     display: flex;
     flex-direction: column;
-    transition: max-height 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+    gap: 10px;
+    margin-top: 4px;
 }
 
-.sheet-summary-bar {
-    padding: 10px 14px;
-    cursor: pointer;
-    user-select: none;
-    background: #FFFFFF;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
+.details-divider {
+    height: 1px;
+    background: var(--border-subtle);
+    margin: 8px 0;
 }
 
-.sheet-summary-bar:hover {
-    background: #FAFAFA;
-}
-
-.sheet-handle-pill {
-    width: 36px;
-    height: 4px;
-    background: #CBD5E1;
-    border-radius: 999px;
-    margin: 0 auto;
-}
-
-.sheet-bar-main {
+.selected-route-banner {
     display: flex;
     align-items: center;
-    justify-content: space-between;
     gap: 12px;
+    background: var(--surface-canvas);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 10px 12px;
 }
 
-.sheet-score-badge {
+.banner-score-col {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: #ECFDF5;
-    border: 1.5px solid #86EFAC;
-    border-radius: 10px;
-    padding: 4px 8px;
-    min-width: 58px;
+    min-width: 52px;
+    background: var(--surface-white);
+    border-radius: var(--radius-sm);
+    padding: 6px 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
 }
 
-.sheet-score-badge .score-val {
-    font-size: 18px;
-    font-weight: 900;
-    color: #16A34A;
+.safety-score-number {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--safety-green);
     line-height: 1;
 }
 
-.sheet-score-badge .score-label {
-    font-size: 9px;
+.safety-score-label {
+    font-size: 8.5px;
     font-weight: 800;
-    color: #15803D;
+    color: var(--text-tertiary);
     letter-spacing: 0.5px;
-}
-
-.sheet-meta-col {
-    flex: 1;
-    min-width: 0;
-}
-
-.sheet-route-title {
-    font-size: 14px;
-    font-weight: 700;
-    color: #0F172A;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.sheet-metrics-row {
-    font-size: 12px;
-    color: #64748B;
-    font-weight: 500;
-    display: flex;
-    gap: 6px;
-    align-items: center;
     margin-top: 2px;
 }
 
-.meta-item.bold {
-    font-weight: 700;
-    color: #0F172A;
+.banner-info-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
 }
 
-.meta-item.danger {
-    color: #EA580C;
+.banner-route-name {
+    font-size: 13.5px;
     font-weight: 700;
+    color: var(--text-primary);
 }
 
-.sheet-actions-group {
+.banner-meta-row {
+    font-size: 11.5px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.meta-dist {
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.meta-danger {
+    color: var(--safety-orange);
+    font-weight: 600;
+}
+
+.meta-dot {
+    color: var(--text-tertiary);
+}
+
+.inline-actions-row {
+    display: flex;
+    gap: 8px;
+}
+
+.inline-drive-btn {
+    flex: 1;
+    height: 38px;
+    font-size: 13px;
+}
+
+.inline-cloud-btn {
+    height: 38px;
+    padding: 0 14px;
+    font-size: 12px;
+}
+
+/* Tabs inside Inline Details */
+.insights-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border-subtle);
+    gap: 4px;
+}
+
+.insight-tab-btn {
+    border: none;
+    background: transparent;
+    padding: 8px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s ease;
+}
+
+.insight-tab-btn:hover {
+    color: var(--text-primary);
+}
+
+.insight-tab-btn.active {
+    color: var(--accent-brand);
+    border-bottom-color: var(--accent-brand);
+}
+
+.safety-advisory-box {
+    display: flex;
+    gap: 8px;
+    background: var(--surface-canvas);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    padding: 10px;
+    font-size: 12px;
+    line-height: 1.45;
+    color: var(--text-secondary);
+    margin: 8px 0;
+}
+
+.advisory-icon {
+    font-size: 15px;
+    flex-shrink: 0;
+}
+
+/* AI Explainability Accordion */
+.explainability-card {
+    background: var(--surface-canvas);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    margin-top: 8px;
+}
+
+.explainability-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 10px;
+    cursor: pointer;
+    user-select: none;
+    background: var(--surface-white);
+}
+
+.explainability-header:hover {
+    background: var(--surface-canvas);
+}
+
+.explainability-header-left {
     display: flex;
     align-items: center;
     gap: 6px;
 }
 
-.sheet-preview-btn {
-    background: #EA580C;
-    color: #FFFFFF;
-    border: none;
+.ai-badge-pill {
+    background: #EEF2FF;
+    color: #4F46E5;
+    border: 1px solid #E0E7FF;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.explainability-title {
     font-size: 12px;
     font-weight: 700;
-    padding: 7px 12px;
-    border-radius: 8px;
-    cursor: pointer;
-    box-shadow: 0 2px 6px rgba(234, 88, 12, 0.25);
-    transition: all 0.15s;
+    color: var(--text-primary);
 }
 
-.sheet-preview-btn:hover {
-    background: #C2410C;
+.explainability-chevron {
+    font-size: 10px;
+    color: var(--text-tertiary);
 }
 
-.sheet-expand-toggle {
-    background: #F1F5F9;
-    border: 1px solid #E2E8F0;
-    color: #475569;
-    font-size: 11px;
-    font-weight: 700;
-    padding: 7px 10px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.15s;
-}
-
-.sheet-expand-toggle:hover {
-    background: #E2E8F0;
-}
-
-.gmaps-bottom-sheet.collapsed .sheet-expanded-content {
-    display: none;
-}
-
-.gmaps-bottom-sheet:not(.collapsed) {
-    max-height: 520px;
-}
-
-.gmaps-bottom-sheet:not(.collapsed) .sheet-expanded-content {
+.explainability-body {
+    padding: 10px;
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
-    max-height: 440px;
-    border-top: 1px solid #E2E8F0;
+    gap: 8px;
+    border-top: 1px solid var(--border-subtle);
+    background: var(--surface-white);
 }
 
-.sheet-bottom-btns {
+.explainability-meta-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 11px;
+}
+
+.ml-model-name-tag {
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.ml-badge-metric {
+    font-weight: 700;
+    color: var(--safety-green);
+    background: var(--safety-green-bg);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.factors-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.factor-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 11.5px;
+}
+
+.factor-label {
+    color: var(--text-secondary);
+}
+
+.factor-bar-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 140px;
+}
+
+.factor-bar-track {
+    flex: 1;
+    height: 6px;
+    background: var(--surface-tonal);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.factor-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+}
+
+.factor-val {
+    font-size: 10.5px;
+    font-weight: 700;
+    width: 32px;
+    text-align: right;
+}
+
+.explainability-footer {
+    font-size: 10px;
+    color: var(--text-tertiary);
+    line-height: 1.4;
+    border-top: 1px solid var(--border-subtle);
+    padding-top: 6px;
+}
+
+/* Checkpoints list */
+.checkpoints-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 220px;
+    overflow-y: auto;
+    padding-top: 8px;
+}
+
+.checkpoint-item {
     display: flex;
     gap: 8px;
-    margin-top: 12px;
+    padding: 8px;
+    border-radius: var(--radius-sm);
+    background: var(--surface-canvas);
+    border: 1px solid var(--border-subtle);
+    cursor: pointer;
+    font-size: 12px;
 }
 
-/* ── 3. Slim Vertical Icon Rail (Right Edge) ───────────────────────────── */
+.checkpoint-item:hover {
+    background: var(--surface-hover);
+}
+
+/* Temporal best travel hour */
+.temporal-best-hour {
+    font-size: 12px;
+    color: var(--text-secondary);
+    padding: 8px 0;
+}
+
+.chart-box {
+    margin-top: 6px;
+    background: var(--surface-canvas);
+    border-radius: var(--radius-sm);
+    padding: 8px;
+    height: 140px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   2. SLIM VERTICAL ICON RAIL (Right Edge — 3 Structured Clusters)
+   ═══════════════════════════════════════════════════════════════════════ */
 .gmaps-floating-rail {
     position: absolute;
     top: 16px;
@@ -747,50 +952,117 @@ html, body {
     gap: 8px;
 }
 
+.rail-cluster {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    background: var(--surface-white);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-md);
+    padding: 4px;
+    box-shadow: var(--elevation-2);
+}
+
 .rail-btn {
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
-    background: #FFFFFF;
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    border: none;
+    color: #3C4043;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     font-size: 18px;
-    color: #334155;
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.15s ease;
     user-select: none;
 }
 
 .rail-btn:hover {
-    background: #FFF7ED;
-    border-color: rgba(234, 88, 12, 0.4);
-    transform: scale(1.06);
-    box-shadow: 0 4px 14px rgba(234, 88, 12, 0.16);
-    color: #EA580C;
+    background: var(--surface-tonal);
+    color: var(--text-primary);
 }
 
 .rail-btn.active {
-    background: #FFF7ED;
-    border-color: #EA580C;
-    color: #EA580C;
+    background: var(--accent-tint);
+    color: var(--accent-brand);
 }
 
+.rail-divider {
+    height: 1px;
+    background: var(--border-subtle);
+    margin: 2px 4px;
+}
+
+.zoom-btn {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+/* Styled Google Maps Dark Tooltip */
+[data-tooltip] {
+    position: relative;
+}
+
+[data-tooltip]::before {
+    content: attr(data-tooltip);
+    position: absolute;
+    right: calc(100% + 12px);
+    top: 50%;
+    transform: translateY(-50%) scale(0.9);
+    background: #202124;
+    color: #FFFFFF;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 500;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    z-index: 999;
+}
+
+[data-tooltip]::after {
+    content: "";
+    position: absolute;
+    right: calc(100% + 6px);
+    top: 50%;
+    transform: translateY(-50%);
+    border-width: 4px;
+    border-style: solid;
+    border-color: transparent transparent transparent #202124;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.15s ease, visibility 0.15s;
+    z-index: 999;
+}
+
+[data-tooltip]:hover::before,
+[data-tooltip]:hover::after {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(-50%) scale(1);
+}
+
+/* Map Layers Dropdown Popover */
 .control-dropdown-container {
     position: relative;
 }
 
 .layers-dropdown {
     position: absolute;
-    right: 54px;
+    right: 52px;
     top: 0;
     width: 240px;
-    background: #FFFFFF;
-    border-radius: 14px;
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.14);
-    border: 1px solid #E2E8F0;
+    background: var(--surface-white);
+    border-radius: var(--radius-md);
+    box-shadow: var(--elevation-3);
+    border: 1px solid var(--border-strong);
     padding: 14px;
     z-index: 100;
     display: flex;
@@ -803,9 +1075,8 @@ html, body {
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    color: #64748B;
+    color: var(--text-secondary);
     margin-top: 4px;
-    margin-bottom: 2px;
 }
 
 .layer-options-grid {
@@ -820,25 +1091,25 @@ html, body {
     align-items: center;
     gap: 6px;
     padding: 8px 6px;
-    border: 1px solid #E2E8F0;
-    border-radius: 8px;
-    background: #F8FAFC;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    background: var(--surface-canvas);
     cursor: pointer;
     font-size: 11px;
     font-weight: 500;
-    color: #334155;
+    color: var(--text-primary);
     transition: all 0.15s ease;
 }
 
 .layer-tile-btn:hover {
-    border-color: #EA580C;
-    background: #FFF7ED;
+    border-color: var(--accent-brand);
+    background: var(--accent-tint);
 }
 
 .layer-tile-btn.active {
-    border-color: #EA580C;
-    background: #FFF7ED;
-    color: #EA580C;
+    border-color: var(--accent-brand);
+    background: var(--accent-tint);
+    color: var(--accent-brand);
     font-weight: 700;
 }
 
@@ -858,89 +1129,31 @@ html, body {
     align-items: center;
     justify-content: space-between;
     font-size: 12px;
-    color: #334155;
-    padding: 5px 0;
+    color: var(--text-primary);
+    padding: 4px 0;
     cursor: pointer;
 }
 
-.rail-divider {
-    width: 24px;
-    height: 1px;
-    background: #E2E8F0;
-    margin: 2px auto;
-}
-
-.zoom-btn {
-    font-size: 20px;
-    font-weight: 700;
-    color: #475569;
-}
-
-/* ── 4. Circular Red SOS 112 FAB (Bottom-Right) ────────────────────────── */
-.gmaps-sos-fab {
-    position: absolute;
-    bottom: 24px;
-    right: 16px;
-    z-index: 40;
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
-    color: #FFFFFF;
-    border: none;
-    box-shadow: 0 4px 20px rgba(220, 38, 38, 0.45);
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s;
-}
-
-.gmaps-sos-fab:hover {
-    transform: scale(1.08);
-    box-shadow: 0 6px 26px rgba(220, 38, 38, 0.6);
-}
-
-.sos-fab-icon {
-    font-size: 18px;
-    line-height: 1;
-}
-
-.sos-fab-text {
-    font-size: 10px;
-    font-weight: 900;
-    letter-spacing: 0.5px;
-}
-
-.sos-fab-halo {
-    position: absolute;
-    inset: -4px;
-    border-radius: 50%;
-    border: 2px solid rgba(239, 68, 68, 0.6);
-    animation: sosHalo 2s infinite ease-out;
-}
-
-@keyframes sosHalo {
-    0% { transform: scale(0.95); opacity: 0.8; }
-    70% { transform: scale(1.3); opacity: 0; }
-    100% { transform: scale(1.3); opacity: 0; }
-}
-
-/* ── 5. Collapsible Floating Legend ────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════════════
+   3. SEPARATED CORRIDOR RISK LEGEND (Above SOS FAB)
+   ═══════════════════════════════════════════════════════════════════════ */
 .gmaps-floating-legend {
     position: absolute;
-    bottom: 24px;
+    bottom: 96px;
     right: 16px;
-    width: 280px;
-    background: var(--bg-card);
-    backdrop-filter: blur(20px);
-    border: 1px solid var(--border-subtle);
+    z-index: 25;
+    width: 230px;
+    background: var(--surface-white);
+    border: 1px solid var(--border-strong);
     border-radius: var(--radius-md);
-    box-shadow: var(--shadow-card);
-    z-index: 30;
+    box-shadow: var(--elevation-2);
     overflow: hidden;
     user-select: none;
+    transition: all 0.2s ease;
+}
+
+.gmaps-floating-legend.collapsed {
+    width: auto;
 }
 
 .legend-header {
@@ -948,11 +1161,29 @@ html, body {
     align-items: center;
     justify-content: space-between;
     padding: 8px 12px;
-    font-size: 0.74rem;
+    font-size: 11.5px;
     font-weight: 700;
     color: var(--text-secondary);
-    background: rgba(255, 255, 255, 0.03);
+    background: var(--surface-white);
     cursor: pointer;
+    gap: 8px;
+}
+
+.legend-header:hover {
+    background: var(--surface-canvas);
+}
+
+.legend-header-left {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent-brand);
 }
 
 .legend-content {
@@ -960,6 +1191,7 @@ html, body {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    border-top: 1px solid var(--border-subtle);
 }
 
 .gmaps-floating-legend.collapsed .legend-content {
@@ -971,23 +1203,23 @@ html, body {
     height: 18px;
     border-radius: 4px;
     overflow: hidden;
-    font-size: 0.62rem;
+    font-size: 10px;
     font-weight: 700;
     text-align: center;
     line-height: 18px;
 }
 
-.scale-segment.low { flex: 1; background: #22C55E; color: #052e16; }
-.scale-segment.mod { flex: 1; background: #EAB308; color: #422006; }
-.scale-segment.high { flex: 1; background: #F97316; color: #431407; }
-.scale-segment.crit { flex: 1; background: #DC2626; color: #450a0a; }
+.scale-segment.low { flex: 1; background: var(--safety-green); color: #FFFFFF; }
+.scale-segment.mod { flex: 1; background: var(--safety-yellow); color: #202124; }
+.scale-segment.high { flex: 1; background: var(--safety-orange); color: #FFFFFF; }
+.scale-segment.crit { flex: 1; background: var(--safety-red); color: #FFFFFF; }
 
 .legend-signs-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 6px;
-    font-size: 0.68rem;
-    color: var(--text-muted);
+    font-size: 11px;
+    color: var(--text-secondary);
 }
 
 .legend-sign-item {
@@ -996,187 +1228,783 @@ html, body {
     gap: 4px;
 }
 
-.sign-emoji { font-size: 0.85rem; }
-
-/* ── Custom On-Map Safety Sign Markers ──────────────────────────────── */
-.safety-road-sign-marker {
-    width: 32px;
-    height: 32px;
+/* ═══════════════════════════════════════════════════════════════════════
+   4. CIRCULAR RED SOS 112 FAB (Bottom-Right, Zero Collision)
+   ═══════════════════════════════════════════════════════════════════════ */
+.gmaps-sos-fab {
+    position: absolute;
+    bottom: 24px;
+    right: 16px;
+    z-index: 40;
+    width: 56px;
+    height: 56px;
     border-radius: 50%;
+    background: var(--safety-red);
+    color: #FFFFFF;
+    border: none;
+    box-shadow: var(--elevation-fab);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.gmaps-sos-fab:hover {
+    transform: scale(1.06);
+    box-shadow: 0 6px 20px rgba(217, 48, 37, 0.55);
+}
+
+.sos-fab-icon {
+    font-size: 19px;
+    line-height: 1;
+}
+
+.sos-fab-text {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
+.sos-fab-halo {
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 2px solid rgba(217, 48, 37, 0.5);
+    animation: sosHalo 2s infinite ease-out;
+}
+
+@keyframes sosHalo {
+    0% { transform: scale(0.95); opacity: 0.8; }
+    70% { transform: scale(1.3); opacity: 0; }
+    100% { transform: scale(1.3); opacity: 0; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   5. FULL-SCREEN IMMERSIVE DRIVE MODE (Google Maps Navigation Standard)
+   ═══════════════════════════════════════════════════════════════════════ */
+.gmaps-drive-hud {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 45;
+}
+
+/* Top Turn Banner */
+.drive-turn-banner {
+    pointer-events: auto;
+    position: absolute;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 480px;
+    max-width: calc(100vw - 32px);
+    background: #137333;
+    color: #FFFFFF;
+    border-radius: var(--radius-md);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
+    padding: 14px 18px 20px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    overflow: hidden;
+}
+
+.drive-banner-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.drive-turn-icon-box {
+    font-size: 28px;
+    line-height: 1;
+}
+
+.drive-turn-text-group {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.drive-turn-distance {
+    font-size: 20px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.drive-turn-instruction {
+    font-size: 13px;
+    font-weight: 500;
+    opacity: 0.95;
+}
+
+.drive-top-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.drive-action-btn,
+.drive-exit-btn {
+    border: none;
+    background: rgba(255, 255, 255, 0.2);
+    color: #FFFFFF;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.drive-action-btn:hover,
+.drive-exit-btn:hover {
+    background: rgba(255, 255, 255, 0.35);
+}
+
+.drive-progress-track {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: rgba(0, 0, 0, 0.25);
+}
+
+.drive-progress-fill {
+    height: 100%;
+    width: 0%;
+    background: #81C995;
+    transition: width 0.8s linear;
+}
+
+/* Auto-dismissing proximity hazard toast */
+.drive-hazard-toast {
+    pointer-events: auto;
+    position: absolute;
+    top: 98px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--safety-red);
+    color: #FFFFFF;
+    border-radius: var(--radius-sm);
+    padding: 10px 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    animation: toastSlide 0.3s ease;
+}
+
+@keyframes toastSlide {
+    from { opacity: 0; transform: translate(-50%, -10px); }
+    to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+.hazard-toast-icon {
+    font-size: 18px;
+}
+
+/* Bottom-left floating speed & road chip */
+.drive-bottom-chip {
+    pointer-events: auto;
+    position: absolute;
+    bottom: 24px;
+    left: 24px;
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-md);
+    box-shadow: var(--elevation-2);
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.drive-speed-box {
+    display: flex;
+    align-items: baseline;
+    gap: 3px;
+}
+
+.drive-speed-val {
+    font-size: 26px;
+    font-weight: 900;
+    color: var(--text-primary);
+    line-height: 1;
+}
+
+.drive-speed-unit {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-secondary);
+}
+
+.drive-road-box {
+    border-left: 1px solid var(--border-subtle);
+    padding-left: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.drive-road-label {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    letter-spacing: 0.5px;
+}
+
+.drive-road-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   6. STANDARDIZED MODAL SYSTEM (SOS, Cloud Sync, Hazard Reporting)
+   ═══════════════════════════════════════════════════════════════════════ */
+.sos-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: rgba(32, 33, 36, 0.65);
+    backdrop-filter: blur(6px);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.1rem;
-    cursor: pointer;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
-    border: 2px solid #ffffff;
-    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-    background: #0f172a;
+    padding: 16px;
 }
 
-.safety-road-sign-marker:hover {
-    transform: scale(1.3);
-    z-index: 50 !important;
+.sos-modal-card {
+    background: var(--surface-white);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.28);
+    border: 1px solid var(--border-subtle);
+    width: 100%;
+    max-width: 540px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    animation: modalPop 0.18s ease-out;
 }
 
-.sign-blackspot {
-    background: #DC2626;
-    animation: dangerPulse 1.8s infinite;
+@keyframes modalPop {
+    from { opacity: 0; transform: scale(0.96); }
+    to { opacity: 1; transform: scale(1); }
 }
 
-.sign-ghat { background: #F97316; }
-.sign-fog { background: #64748B; }
-.sign-rain { background: #0284C7; }
-.sign-unlit { background: #78350F; }
-.sign-safehaven { background: #059669; }
-
-@keyframes dangerPulse {
-    0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.8); }
-    70% { box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
-}
-
-/* ── On-Map Alternative Route Badge Pills (Google Maps style) ───────── */
-.onmap-route-pill {
-    padding: 5px 10px;
-    background: rgba(15, 23, 42, 0.92);
-    backdrop-filter: blur(12px);
-    border: 1.5px solid #3B82F6;
-    border-radius: 20px;
-    color: #ffffff;
-    font-size: 0.72rem;
-    font-weight: 700;
-    cursor: pointer;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+.sos-modal-header {
     display: flex;
     align-items: center;
-    gap: 6px;
-    white-space: nowrap;
-    transition: all 0.2s;
+    justify-content: space-between;
+    padding: 16px 20px 12px 20px;
+    border-bottom: 1px solid var(--border-subtle);
 }
 
-.onmap-route-pill:hover {
-    transform: scale(1.1);
-    box-shadow: 0 10px 25px rgba(59, 130, 246, 0.5);
+.sos-title-group h2 {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-top: 2px;
 }
 
-.onmap-route-pill.alternate {
-    background: rgba(30, 41, 59, 0.88);
-    border-color: #64748B;
-    color: #CBD5E1;
+.sos-alert-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: var(--safety-red-bg);
+    color: var(--safety-red);
 }
 
-.onmap-route-pill.danger-route {
-    border-color: #F97316;
+.sos-modal-close {
+    border: none;
+    background: var(--surface-tonal);
+    color: var(--text-secondary);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
 }
 
-/* ── Navigation Simulation HUD ──────────────────────────────────────── */
-.simulation-hud {
-    position: absolute;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 460px;
-    max-width: calc(100vw - 40px);
-    background: rgba(10, 14, 26, 0.95);
-    backdrop-filter: blur(24px);
-    border: 2px solid #3B82F6;
-    border-radius: var(--radius-lg);
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(59, 130, 246, 0.3);
-    padding: 14px;
-    z-index: 80;
+.sos-modal-close:hover {
+    background: var(--surface-hover);
+    color: var(--text-primary);
+}
+
+/* Emergency SOS Modal: 3 High-Contrast 56px Tap Targets */
+.sos-numbers-grid {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    padding: 16px 20px;
 }
 
-.hud-top {
+.sos-call-btn {
+    min-height: 58px;
+    border-radius: var(--radius-md);
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    text-decoration: none;
+    border: 1.5px solid;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.sos-call-btn:hover {
+    transform: translateY(-1px);
+}
+
+.sos-call-btn.primary-112 {
+    background: #FEF2F2;
+    border-color: var(--safety-red);
+    color: #991B1B;
+}
+
+.sos-call-btn.nhai-1033 {
+    background: #EFF6FF;
+    border-color: #2563EB;
+    color: #1E40AF;
+}
+
+.sos-call-btn.medical-108 {
+    background: #F0FDF4;
+    border-color: #16A34A;
+    color: #166534;
+}
+
+.call-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px;
+    font-weight: 900;
+    min-width: 58px;
+}
+
+.call-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    padding: 0 10px;
+}
+
+.call-title {
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.call-subtitle {
+    font-size: 11px;
+    opacity: 0.85;
+}
+
+.call-action-chip {
+    padding: 6px 12px;
+    border-radius: var(--radius-pill);
+    font-size: 12px;
+    font-weight: 800;
+    color: #FFFFFF;
+}
+
+.primary-112 .call-action-chip { background: var(--safety-red); }
+.nhai-1033 .call-action-chip { background: #2563EB; }
+.medical-108 .call-action-chip { background: #16A34A; }
+
+/* Monospace GPS Coordinates Card */
+.sos-gps-card {
+    background: var(--surface-canvas);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    margin: 0 20px 16px 20px;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.sos-gps-label {
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+}
+
+.sos-gps-coords {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.sos-gps-sub {
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+.sos-gps-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.sos-copy-btn, .sos-share-btn {
+    flex: 1;
+    height: 34px;
+    font-size: 12px;
+}
+
+.sos-safety-services {
+    padding: 12px 20px 16px 20px;
+    border-top: 1px solid var(--border-subtle);
+}
+
+.services-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+}
+
+.service-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--surface-canvas);
+    border: 1px solid var(--border-subtle);
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 6px;
+    font-size: 12px;
+}
+
+.service-icon {
+    font-size: 18px;
+}
+
+/* Cloud Sync Modal */
+.cloud-status-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--accent-tint);
+    border: 1px solid var(--accent-border);
+    border-radius: var(--radius-md);
+    padding: 12px 16px;
+    margin: 16px 20px 12px 20px;
+}
+
+.cloud-status-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.cloud-status-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--accent-brand);
+}
+
+.cloud-status-sub {
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--accent-brand);
+    letter-spacing: 0.5px;
+}
+
+.cloud-status-text {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.cloud-status-pill {
+    padding: 4px 10px;
+    border-radius: var(--radius-pill);
+    font-size: 11px;
+    font-weight: 800;
+    background: #FED7AA;
+    color: #9A3412;
+}
+
+.cloud-section {
+    padding: 0 20px 14px 20px;
+}
+
+.cloud-section-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+}
+
+.saved-trips-list {
+    max-height: 180px;
+    overflow-y: auto;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    padding: 8px;
+    background: var(--surface-canvas);
+}
+
+.empty-trips-notice {
+    color: var(--text-tertiary);
+    font-size: 12px;
+    text-align: center;
+    padding: 16px;
+}
+
+.cloud-advanced-setup {
+    margin: 0 20px 16px 20px;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+}
+
+.cloud-setup-summary {
+    padding: 10px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    background: var(--surface-canvas);
+}
+
+.cloud-setup-body {
+    padding: 12px;
+    font-size: 11.5px;
+    line-height: 1.5;
+    color: var(--text-secondary);
+    border-top: 1px solid var(--border-subtle);
+}
+
+.cloud-setup-body pre {
+    background: #1E293B;
+    color: #F8FAFC;
+    padding: 8px;
+    border-radius: 6px;
+    margin: 6px 0;
+    font-size: 11px;
+    overflow-x: auto;
+}
+
+/* Citizen Report Hazard Modal */
+.hazard-report-card {
+    max-height: 90vh;
+}
+
+.hazard-modal-scrollable {
+    padding: 16px 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.form-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.form-label-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
 
-.hud-speed {
-    font-size: 1.8rem;
-    font-weight: 900;
-    font-family: 'JetBrains Mono', monospace;
-    color: #38BDF8;
-    line-height: 1;
-}
-
-.hud-speed small {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-}
-
-.hud-curr-road {
-    font-size: 0.82rem;
-    color: var(--text-secondary);
-    margin-top: 4px;
-}
-
-.hud-close-btn {
-    background: rgba(220, 38, 38, 0.18);
-    border: 1px solid rgba(220, 38, 38, 0.4);
-    color: #FCA5A5;
-    padding: 6px 12px;
-    border-radius: var(--radius-sm);
-    font-size: 0.76rem;
+.form-hint-ai {
+    font-size: 10.5px;
     font-weight: 700;
-    cursor: pointer;
+    color: #4F46E5;
 }
 
-.hud-alert-banner {
-    display: flex;
-    align-items: center;
+.form-row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 10px;
-    background: rgba(249, 115, 22, 0.15);
-    border: 1px solid rgba(249, 115, 22, 0.4);
+}
+
+.hazard-modal-scrollable .gmap-input {
+    background: var(--surface-canvas);
+    border: 1px solid var(--border-strong);
     border-radius: var(--radius-sm);
-    padding: 8px 12px;
-    font-size: 0.8rem;
-    color: #FDBA74;
+    padding: 8px 10px;
 }
 
-.hud-alert-icon { font-size: 1.2rem; }
-
-.hud-progress-bar {
-    width: 100%;
-    height: 4px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 2px;
-    overflow: hidden;
+.hazard-modal-scrollable textarea.gmap-input {
+    resize: none;
 }
 
-.hud-progress-fill {
-    width: 0%;
-    height: 100%;
-    background: var(--accent-gradient);
-    transition: width 0.3s linear;
+/* Category Icon Grid */
+.category-icon-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
 }
 
-/* ── Loading Overlay ────────────────────────────────────────────────── */
-.map-loading {
-    position: absolute;
-    inset: 0;
-    background: rgba(10, 14, 26, 0.7);
-    backdrop-filter: blur(8px);
+.category-tile {
+    border: 1.5px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    background: var(--surface-canvas);
+    padding: 8px 4px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: 12px;
-    z-index: 60;
-    color: #F1F5F9;
-    font-size: 0.95rem;
+    gap: 4px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.category-tile:hover {
+    border-color: #BDC1C6;
+    background: var(--surface-hover);
+}
+
+.category-tile.active {
+    border-color: var(--accent-brand);
+    background: var(--accent-tint);
+    color: var(--accent-brand);
+    font-weight: 700;
+}
+
+.category-emoji {
+    font-size: 18px;
+}
+
+.category-name {
+    font-size: 10.5px;
+    text-align: center;
+}
+
+/* Severity Slider */
+.severity-badge-pill {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: var(--radius-pill);
+    background: #FEF7E0;
+    color: #B06000;
+}
+
+.severity-slider-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.severity-range-slider {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    outline: none;
+    accent-color: var(--accent-brand);
+    cursor: pointer;
+}
+
+.severity-ticks {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    color: var(--text-tertiary);
+}
+
+.ai-hazard-nlp-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #EEF2FF;
+    border: 1px solid #C7D2FE;
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+    font-size: 11.5px;
+}
+
+.ai-nlp-left {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.ai-nlp-badge {
+    background: #4F46E5;
+    color: #FFFFFF;
+    font-size: 9.5px;
+    font-weight: 800;
+    padding: 1px 5px;
+    border-radius: 3px;
+}
+
+.ai-nlp-conf {
+    font-size: 10.5px;
+    color: #4F46E5;
     font-weight: 600;
 }
 
+.hazard-modal-sticky-footer {
+    padding: 12px 20px;
+    border-top: 1px solid var(--border-subtle);
+    background: var(--surface-white);
+}
+
+.btn-publish-hazard {
+    width: 100%;
+    height: 40px;
+    font-size: 13.5px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   MAP OVERLAYS & CONTROLS POLISH
+   ═══════════════════════════════════════════════════════════════════════ */
+.map-loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(32, 33, 36, 0.9);
+    color: #FFFFFF;
+    border-radius: var(--radius-md);
+    padding: 14px 22px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    box-shadow: var(--elevation-3);
+    z-index: 100;
+}
+
 .loading-spinner {
-    width: 38px;
-    height: 38px;
-    border: 3px solid rgba(59, 130, 246, 0.2);
-    border-top-color: #3B82F6;
+    width: 18px;
+    height: 18px;
+    border: 2.5px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #FFFFFF;
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
 }
@@ -1185,759 +2013,100 @@ html, body {
     to { transform: rotate(360deg); }
 }
 
-/* ── Mapbox / MapLibre Popup Overrides ───────────────────────────────── */
-.mapboxgl-popup-content,
-.maplibregl-popup-content {
-    background: #FFFFFF !important;
-    backdrop-filter: blur(16px);
-    border: 1px solid rgba(234, 88, 12, 0.3) !important;
-    border-radius: var(--radius-md) !important;
-    box-shadow: var(--shadow-popup) !important;
-    padding: 12px 14px !important;
-    color: var(--text-primary) !important;
-}
-
-.mapboxgl-popup-tip,
-.maplibregl-popup-tip {
-    border-top-color: #FFFFFF !important;
-}
-
-.popup-title {
-    font-size: 0.88rem;
-    font-weight: 700;
-    margin-bottom: 4px;
-    color: #0F172A !important;
-}
-
-.popup-severity {
-    display: inline-block;
-    padding: 2px 7px;
-    border-radius: 4px;
-    font-size: 0.72rem;
-    font-weight: 700;
-    font-family: 'JetBrains Mono', monospace;
-    margin-bottom: 6px;
-}
-
-.popup-detail {
-    font-size: 0.74rem;
-    color: var(--text-secondary);
-    line-height: 1.45;
-}
-
-/* ── Live GPS Input Button ─────────────────────────────────────────── */
-.input-gps-btn {
-    background: #FFF7ED;
-    border: 1px solid rgba(234, 88, 12, 0.4);
-    color: #EA580C;
-    font-size: 0.72rem;
-    font-weight: 600;
-    padding: 4px 8px;
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    white-space: nowrap;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 3px;
-    margin-right: 4px;
-}
-.input-gps-btn:hover {
-    background: #FFEDD5;
-    color: #C2410C;
-    border-color: #EA580C;
-    transform: translateY(-1px);
-}
-.input-gps-btn.active {
-    background: var(--accent-gradient);
+/* Single On-Map Route ETA & Safety Pill (Google Maps Standard) */
+.onmap-route-pill {
+    padding: 6px 12px;
+    background: rgba(32, 33, 36, 0.95);
+    backdrop-filter: blur(8px);
+    border: 1.5px solid #FFFFFF;
+    border-radius: var(--radius-pill);
     color: #FFFFFF;
-    border-color: #EA580C;
-}
-
-/* ── Top Bar Voice & SOS Buttons ────────────────────────────────────── */
-.header-btn.sos-btn {
-    background: #FEF2F2;
-    border: 1px solid rgba(239, 68, 68, 0.4);
-    color: #DC2626;
+    font-size: 11.5px;
     font-weight: 700;
-    display: inline-flex;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+    display: flex;
     align-items: center;
     gap: 6px;
-}
-.header-btn.sos-btn:hover {
-    background: #FEE2E2;
-    border-color: #DC2626;
-    color: #991B1B;
-    transform: scale(1.03);
-}
-.sos-pulse {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #DC2626;
-    animation: sos-pulse-anim 1.5s infinite;
-    display: inline-block;
-}
-@keyframes sos-pulse-anim {
-    0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.8); }
-    70% { box-shadow: 0 0 0 8px rgba(220, 38, 38, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+    white-space: nowrap;
+    transition: transform 0.15s ease;
 }
 
-.header-btn.voice-btn {
-    background: #FFF7ED;
-    border: 1px solid rgba(234, 88, 12, 0.35);
-    color: #EA580C;
-    font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-}
-.header-btn.voice-btn:hover {
-    background: #FFEDD5;
-    color: #C2410C;
-}
-.header-btn.voice-btn.muted {
-    background: #F1F5F9;
-    border-color: #CBD5E1;
-    color: #64748B;
+.onmap-route-pill:hover {
+    transform: scale(1.08);
 }
 
-/* ── Map Controls GPS & SOS ────────────────────────────────────────── */
-.map-ctrl-btn.gps-ctrl-btn {
-    color: #EA580C;
-}
-.map-ctrl-btn.gps-ctrl-btn.active {
-    background: var(--accent-gradient);
-    border-color: #EA580C;
-    color: #FFFFFF;
-    box-shadow: 0 0 14px rgba(234, 88, 12, 0.6);
-}
-.map-ctrl-btn.sos-fab-btn {
-    color: #DC2626;
-    border-color: rgba(220, 38, 38, 0.35);
-}
-.map-ctrl-btn.sos-fab-btn:hover {
-    background: #FEF2F2;
-    border-color: #DC2626;
+.onmap-route-pill.active {
+    background: #1E293B;
+    border-color: var(--accent-brand);
 }
 
-/* ── Live GPS User Radar Pin ───────────────────────────────────────── */
-.gps-user-marker {
-    position: relative;
+/* Safety Road Signs Markers */
+.safety-road-sign-marker {
     width: 28px;
     height: 28px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-}
-.gps-user-core {
-    width: 14px;
-    height: 14px;
-    background: #EA580C;
-    border: 2.5px solid #FFFFFF;
-    border-radius: 50%;
-    box-shadow: 0 0 12px rgba(234, 88, 12, 1);
-    z-index: 2;
-    position: relative;
-}
-.gps-user-radar {
-    position: absolute;
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    background: rgba(234, 88, 12, 0.25);
-    border: 1.5px solid rgba(234, 88, 12, 0.7);
-    animation: gps-radar-ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
-    z-index: 1;
-}
-@keyframes gps-radar-ping {
-    0% { transform: scale(0.3); opacity: 1; }
-    80% { transform: scale(1.6); opacity: 0; }
-    100% { transform: scale(1.8); opacity: 0; }
-}
-
-/* ── Navigation HUD Enhancements ───────────────────────────────────── */
-.hud-right-actions {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-.hud-voice-btn {
-    background: #FFF7ED;
-    border: 1px solid rgba(234, 88, 12, 0.35);
-    color: #EA580C;
-    padding: 5px 10px;
-    border-radius: var(--radius-sm);
-    font-size: 0.75rem;
-    font-weight: 600;
+    font-size: 14px;
     cursor: pointer;
-    transition: all 0.2s;
-}
-.hud-voice-btn.muted {
-    background: #F1F5F9;
-    border-color: #CBD5E1;
-    color: #64748B;
-}
-.hud-turn-guidance {
-    background: #FFF7ED;
-    border-radius: var(--radius-sm);
-    padding: 7px 12px;
-    margin: 8px 0;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 0.82rem;
-    font-weight: 600;
-    color: #0F172A;
-    border-left: 3px solid #EA580C;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+    border: 2px solid #FFFFFF;
+    background: #0F172A;
+    transition: transform 0.15s ease;
 }
 
-/* ── SOS Emergency Modal ───────────────────────────────────────────── */
-.sos-modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(15, 23, 42, 0.6);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    z-index: 10000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
+.safety-road-sign-marker:hover {
+    transform: scale(1.3);
+    z-index: 50 !important;
 }
-.sos-modal-card {
-    background: #FFFFFF;
-    border: 1px solid rgba(234, 88, 12, 0.35);
-    border-radius: var(--radius-lg);
-    width: 100%;
-    max-width: 540px;
-    box-shadow: 0 25px 50px -12px rgba(234, 88, 12, 0.25), 0 10px 25px rgba(15, 23, 42, 0.1);
-    padding: 24px;
-    color: #0F172A;
-    animation: modal-pop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-}
-@keyframes modal-pop {
-    from { opacity: 0; transform: scale(0.95); }
-    to { opacity: 1; transform: scale(1); }
-}
-.sos-modal-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    margin-bottom: 18px;
-}
-.sos-alert-badge {
-    display: inline-block;
-    background: #FFF7ED;
-    border: 1px solid #EA580C;
-    color: #C2410C;
-    font-size: 0.65rem;
-    font-weight: 800;
-    letter-spacing: 0.08em;
-    padding: 3px 8px;
-    border-radius: 4px;
-    margin-bottom: 6px;
-}
-.sos-modal-header h2 {
-    font-size: 1.3rem;
-    font-weight: 800;
-    color: #0F172A;
-}
-.sos-modal-close {
-    background: #F1F5F9;
-    border: 1px solid #E2E8F0;
-    color: var(--text-secondary);
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: all 0.2s;
-}
-.sos-modal-close:hover {
-    background: #E2E8F0;
-    color: #0F172A;
-}
-.sos-gps-card {
-    background: #FFF7ED;
-    border: 1px solid rgba(234, 88, 12, 0.25);
-    border-radius: var(--radius-md);
-    padding: 14px;
-    margin-bottom: 18px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-.sos-gps-label {
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    color: #9A3412;
-    font-weight: 700;
-    letter-spacing: 0.05em;
-}
-.sos-gps-coords {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: #EA580C;
-}
-.sos-gps-sub {
-    font-size: 0.72rem;
-    color: #64748B;
-}
-.sos-gps-actions {
-    display: flex;
-    gap: 10px;
-}
-.sos-copy-btn, .sos-share-btn {
-    flex: 1;
-    padding: 9px 12px;
-    border-radius: var(--radius-sm);
-    font-size: 0.8rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    border: none;
-}
-.sos-copy-btn {
-    background: #FFFFFF;
-    border: 1px solid rgba(234, 88, 12, 0.25);
-    color: #0F172A;
-}
-.sos-copy-btn:hover {
-    background: #F8FAFC;
-    border-color: #EA580C;
-}
-.sos-share-btn {
-    background: #16A34A;
-    color: #FFFFFF;
-}
-.sos-share-btn:hover {
-    background: #15803D;
-}
-.sos-numbers-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    margin-bottom: 18px;
-}
-.sos-call-card {
-    border-radius: var(--radius-md);
-    padding: 12px 8px;
-    text-decoration: none;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    transition: all 0.2s;
-}
-.sos-call-card:hover {
-    transform: translateY(-2px);
-}
-.sos-call-card.primary {
-    border: 1px solid rgba(239, 68, 68, 0.35);
-    background: #FEF2F2;
-}
-.sos-call-card.nhai {
-    border: 1px solid rgba(234, 88, 12, 0.35);
-    background: #FFF7ED;
-}
-.sos-call-card.medical {
-    border: 1px solid rgba(16, 185, 129, 0.35);
-    background: #F0FDF4;
-}
-.sos-num-badge {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 1.4rem;
-    font-weight: 800;
-    color: #0F172A;
-    margin-bottom: 2px;
-}
-.sos-call-info strong {
-    display: block;
-    font-size: 0.74rem;
-    color: #0F172A;
-    margin-bottom: 2px;
-}
-.sos-call-info span {
-    display: block;
-    font-size: 0.62rem;
-    color: #64748B;
-    line-height: 1.2;
-    min-height: 22px;
-}
-.sos-call-action {
-    margin-top: 6px;
-    background: #DC2626;
-    color: #FFFFFF;
-    font-size: 0.7rem;
-    font-weight: 700;
-    padding: 3px 10px;
-    border-radius: 999px;
-}
-.sos-call-card.nhai .sos-call-action { background: #EA580C; }
-.sos-call-card.medical .sos-call-action { background: #16A34A; }
 
-.sos-safety-services {
-    border-top: 1px solid var(--border-subtle);
-    padding-top: 12px;
-}
-.services-title {
-    font-size: 0.72rem;
-    color: #64748B;
-    text-transform: uppercase;
-    font-weight: 700;
-    margin-bottom: 8px;
-}
-.service-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: #FFF7ED;
-    border: 1px solid rgba(234, 88, 12, 0.15);
-    padding: 7px 10px;
-    border-radius: var(--radius-sm);
-    margin-bottom: 6px;
-}
-.service-icon { font-size: 1.2rem; }
-.service-item strong { display: block; font-size: 0.75rem; color: #0F172A; }
-.service-item span { font-size: 0.68rem; color: #64748B; }
+.sign-blackspot { background: var(--safety-red); animation: dangerPulse 2s infinite; }
+.sign-ghat { background: var(--safety-orange); }
+.sign-fog { background: #64748B; }
+.sign-rain { background: #0284C7; }
+.sign-unlit { background: #78350F; }
+.sign-safehaven { background: var(--safety-green); }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   RESPONSIVE & MOBILE DESIGN SYSTEM (Flutter / Native Mobile & PWA Parity)
-   ═══════════════════════════════════════════════════════════════════════════ */
+@keyframes dangerPulse {
+    0% { box-shadow: 0 0 0 0 rgba(217, 48, 37, 0.7); }
+    70% { box-shadow: 0 0 0 8px rgba(217, 48, 37, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(217, 48, 37, 0); }
+}
 
+/* ═══════════════════════════════════════════════════════════════════════
+   RESPONSIVE (< 768px)
+   ═══════════════════════════════════════════════════════════════════════ */
 @media (max-width: 768px) {
-    /* Header optimization for mobile */
-    .gmaps-header {
-        padding: 0 10px;
-        height: 50px;
-    }
-    .header-tagline,
-    .header-hud {
-        display: none !important;
-    }
-    .header-right {
-        gap: 6px;
-    }
-    .header-btn {
-        padding: 5px 8px;
-        font-size: 0.72rem;
-    }
-    .header-btn.voice-btn .voice-label {
-        display: none;
-    }
-    #weather-badge {
-        display: none;
-    }
-    #live-status-badge .badge-text {
-        display: none;
-    }
-
-    /* Direction Card on Mobile */
     .gmaps-floating-card {
         top: 8px;
         left: 8px;
         right: 8px;
         width: auto;
         max-width: none;
-        padding: 10px 12px;
-        border-radius: var(--radius-md);
-    }
-    .travel-modes-bar {
-        padding-bottom: 6px;
-        margin-bottom: 6px;
-        gap: 4px;
-    }
-    .mode-btn {
-        padding: 5px 4px;
-        font-size: 0.72rem;
-    }
-    .fast-corridor-presets {
-        display: none; /* Hide presets on small mobile to give full screen to map */
+        max-height: 48vh;
+        padding: 12px;
     }
 
-    /* Route Drawer as Mobile Bottom Sheet */
-    .gmaps-routes-drawer {
-        left: 0;
-        right: 0;
-        bottom: 0;
-        width: 100%;
-        max-width: 100vw;
-        max-height: 60vh;
-        border-radius: 20px 20px 0 0;
-        border-bottom: none;
-        box-shadow: 0 -8px 24px rgba(15, 23, 42, 0.15);
-    }
-    .gmaps-routes-drawer.collapsed {
-        max-height: 52px;
-    }
-
-    /* Floating map controls on Mobile */
-    .gmaps-floating-controls {
+    .gmaps-floating-rail {
+        top: auto;
+        bottom: 88px;
         right: 12px;
-        bottom: 70px;
     }
+
     .gmaps-floating-legend {
-        display: none; /* Collapsed on mobile */
+        bottom: 148px;
+        right: 12px;
     }
 
-    /* Simulation HUD on Mobile */
-    .sim-hud-container {
-        top: 60px;
-        left: 10px;
-        right: 10px;
-        width: auto;
-        transform: none;
+    .drive-turn-banner {
+        width: calc(100vw - 24px);
+        top: 8px;
     }
 
-    /* Modal responsiveness */
-    .sos-modal-card {
-        width: 95vw;
-        max-height: 90vh;
-        padding: 16px;
-        overflow-y: auto;
+    .drive-bottom-chip {
+        bottom: 16px;
+        left: 12px;
     }
 }
-
-@media (max-width: 480px) {
-    .logo-text {
-        font-size: 1.05rem;
-    }
-    .logo-icon svg {
-        width: 24px;
-        height: 24px;
-    }
-    .header-btn {
-        padding: 4px 6px;
-        font-size: 0.68rem;
-    }
-    .sos-btn {
-        padding: 4px 8px;
-    }
-    .sos-numbers-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   AI / ML Explainability & Real-Time Hazard NLP Styles
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-.explainability-card {
-    margin-top: 10px;
-    background: #F8FAFC;
-    border: 1px solid #E2E8F0;
-    border-radius: 12px;
-    overflow: hidden;
-    transition: all 0.2s ease;
-}
-
-.explainability-card:hover {
-    border-color: #CBD5E1;
-}
-
-.explainability-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 12px;
-    cursor: pointer;
-    background: #FFFFFF;
-    user-select: none;
-    transition: background 0.15s ease;
-}
-
-.explainability-header:hover {
-    background: #F1F5F9;
-}
-
-.explainability-header-left {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.ai-badge-pill {
-    background: #EEF2FF;
-    color: #4F46E5;
-    border: 1px solid #C7D2FE;
-    font-size: 10px;
-    font-weight: 800;
-    padding: 2px 7px;
-    border-radius: 6px;
-    letter-spacing: 0.3px;
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-}
-
-.explainability-title {
-    font-size: 12px;
-    font-weight: 700;
-    color: #1E293B;
-}
-
-.explainability-chevron {
-    font-size: 10px;
-    color: #64748B;
-    transition: transform 0.25s ease;
-}
-
-.explainability-chevron.open {
-    transform: rotate(180deg);
-}
-
-.explainability-body {
-    padding: 12px;
-    border-top: 1px solid #E2E8F0;
-    background: #FAFAFA;
-}
-
-.explainability-meta-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 10px;
-    padding-bottom: 8px;
-    border-bottom: 1px dashed #E2E8F0;
-}
-
-.ml-model-name-tag {
-    font-size: 11px;
-    font-weight: 600;
-    color: #475569;
-}
-
-.ml-badge-metric {
-    background: #ECFDF5;
-    color: #059669;
-    border: 1px solid #A7F3D0;
-    font-size: 10px;
-    font-weight: 800;
-    padding: 2px 6px;
-    border-radius: 5px;
-}
-
-.factors-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.factor-item {
-    background: #FFFFFF;
-    border: 1px solid #E2E8F0;
-    border-radius: 8px;
-    padding: 8px 10px;
-}
-
-.factor-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 11px;
-    margin-bottom: 4px;
-}
-
-.factor-name {
-    font-weight: 700;
-    color: #1E293B;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-
-.factor-pct {
-    font-weight: 800;
-    color: #EA580C;
-    background: #FFF7ED;
-    padding: 1px 6px;
-    border-radius: 4px;
-    font-size: 10px;
-}
-
-.factor-progress-track {
-    width: 100%;
-    height: 5px;
-    background: #F1F5F9;
-    border-radius: 999px;
-    overflow: hidden;
-    margin-bottom: 5px;
-}
-
-.factor-progress-fill {
-    height: 100%;
-    border-radius: 999px;
-    transition: width 0.4s ease;
-}
-
-.factor-explanation {
-    font-size: 10px;
-    color: #64748B;
-    line-height: 1.3;
-}
-
-.explainability-footer {
-    margin-top: 10px;
-    padding-top: 6px;
-    border-top: 1px dashed #E2E8F0;
-    font-size: 9.5px;
-    color: #94A3B8;
-    line-height: 1.3;
-}
-
-/* Hazard Modal NLP Suggestion Chip */
-.ai-hazard-nlp-box {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%);
-    border: 1px solid #C7D2FE;
-    border-radius: 8px;
-    padding: 8px 12px;
-    animation: fadeInSlide 0.25s ease;
-}
-
-.ai-nlp-left {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.ai-nlp-badge {
-    background: #4F46E5;
-    color: #FFFFFF;
-    font-size: 9.5px;
-    font-weight: 800;
-    padding: 2px 6px;
-    border-radius: 4px;
-    letter-spacing: 0.4px;
-    white-space: nowrap;
-}
-
-.ai-nlp-text {
-    font-size: 12px;
-    color: #1E1B4B;
-}
-
-.ai-nlp-conf {
-    font-size: 10.5px;
-    font-weight: 700;
-    color: #4338CA;
-    white-space: nowrap;
-}
-
-@keyframes fadeInSlide {
-    from {
-        opacity: 0;
-        transform: translateY(-4px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-
