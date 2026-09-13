@@ -514,8 +514,18 @@ function showRouteTooltip(route, index, isActive) {
     if (!route || !route.route_points || route.route_points.length === 0) return;
 
     const midPoint = route.route_points[Math.floor(route.route_points.length / 2)];
+    
+    const wrapper = document.createElement('div');
+    wrapper.className = 'onmap-tooltip-wrapper';
+    wrapper.style.width = 'max-content';
+    wrapper.style.maxWidth = '320px';
+    wrapper.style.display = 'inline-flex';
+
     const pillEl = document.createElement('div');
     pillEl.className = `onmap-route-pill ${isActive ? 'active' : 'preview'} ${route.avg_cri >= 6.5 ? 'danger-route' : ''}`;
+    pillEl.style.width = 'max-content';
+    pillEl.style.maxWidth = '300px';
+    pillEl.style.whiteSpace = 'nowrap';
 
     const hrs = Math.floor(route.est_time_min / 60);
     const mins = route.est_time_min % 60;
@@ -534,8 +544,10 @@ function showRouteTooltip(route, index, isActive) {
         selectRoute(index);
     };
 
+    wrapper.appendChild(pillEl);
+
     activeRouteTooltipMarker = new mapboxgl.Marker({ 
-        element: pillEl, 
+        element: wrapper, 
         anchor: 'bottom',
         offset: [0, -6] 
     })
