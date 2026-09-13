@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafePass AI — ML Model Card & System Specification</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/main.css?v=3.8">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        body {
+            background-color: #0B0F19;
+            color: #E2E8F0;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .header-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 28px;
+            background: #111827;
+            border-bottom: 1px solid #1F2937;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: white;
+            font-weight: 700;
+            font-size: 1.15rem;
+        }
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .nav-btn {
+            background: #1F2937;
+            color: #94A3B8;
+            padding: 7px 14px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            border: 1px solid #374151;
+        }
+        .nav-btn:hover {
+            background: #2563EB;
+            color: white;
+            border-color: #2563EB;
+        }
+        .container {
+            max-width: 960px;
+            margin: 40px auto;
+            padding: 0 24px 60px;
+        }
+        .card-box {
+            background: #111827;
+            border: 1px solid #1F2937;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            line-height: 1.7;
+        }
+        #content h1 { font-size: 1.85rem; color: #F8FAFC; border-bottom: 1px solid #1F2937; padding-bottom: 12px; margin-top: 0; }
+        #content h2 { font-size: 1.4rem; color: #38BDF8; margin-top: 32px; border-bottom: 1px solid #1F2937; padding-bottom: 8px; }
+        #content h3 { font-size: 1.15rem; color: #F1F5F9; margin-top: 24px; }
+        #content p, #content li { color: #CBD5E1; font-size: 0.95rem; }
+        #content pre {
+            background: #0B0F19;
+            border: 1px solid #1E293B;
+            border-radius: 8px;
+            padding: 16px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: #38BDF8;
+        }
+        #content code {
+            font-family: 'JetBrains Mono', monospace;
+            background: #1E293B;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #38BDF8;
+            font-size: 0.85em;
+        }
+        #content pre code {
+            background: transparent;
+            padding: 0;
+        }
+        #content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        #content th, #content td {
+            border: 1px solid #1F2937;
+            padding: 10px 14px;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+        #content th {
+            background: #1F2937;
+            color: #F8FAFC;
+        }
+        #content tr:nth-child(even) {
+            background: rgba(255, 255, 255, 0.02);
+        }
+        #content a {
+            color: #38BDF8;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <header class="header-bar">
+        <a href="/" class="logo-box">
+            <span>🛡️ SafePass <span style="color:#F97316;">AI</span></span>
+            <span style="font-size:0.8rem; background:#1E293B; color:#94A3B8; padding:3px 8px; border-radius:4px; margin-left:6px;">Model Card</span>
+        </a>
+        <div class="nav-links">
+            <a href="/" class="nav-btn">🗺️ Main App</a>
+            <a href="/dashboard" class="nav-btn">📊 Admin Dashboard</a>
+            <a href="/docs" class="nav-btn">⚡ OpenAPI Docs</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="card-box">
+            <div id="content">Loading documentation...</div>
+        </div>
+    </div>
+
+    <script>
+        const rawMarkdown = {{ markdown_content | tojson }};
+        document.getElementById('content').innerHTML = marked.parse(rawMarkdown);
+    </script>
+</body>
+</html>

@@ -107,13 +107,23 @@ async def dashboard(request: Request):
 
 
 @app.get("/model-card")
-async def model_card():
-    """Serve MODEL_CARD.md directly for SIH 2026 judges evaluation."""
+async def model_card(request: Request, format: str = "html"):
+    """Serve MODEL_CARD specification with executive dark-theme viewer for SIH judges."""
     from fastapi.responses import PlainTextResponse
+    card_content = ""
     for p in [Path(__file__).parent / "MODEL_CARD.md", Path(__file__).parent.parent / "MODEL_CARD.md"]:
         if p.exists():
-            return PlainTextResponse(p.read_text(), media_type="text/markdown")
-    return PlainTextResponse("MODEL_CARD.md not found", status_code=404)
+            card_content = p.read_text(encoding="utf-8")
+            break
+    if not card_content:
+        return PlainTextResponse("MODEL_CARD.md not found", status_code=404)
+    if format == "raw":
+        return PlainTextResponse(card_content, media_type="text/markdown")
+    return templates.TemplateResponse(
+        request=request,
+        name="model_card.html",
+        context={"markdown_content": card_content}
+    )
 
 
 

@@ -1,6 +1,6 @@
 # SafePass AI — Model Card & Machine Learning Specification
 **Smart India Hackathon (SIH) 2026 — Problem Statement R1-03: Preventable Road Accidents**  
-**Live Production Web System**: [https://speakers-knee-depend-smilies.trycloudflare.com/](https://speakers-knee-depend-smilies.trycloudflare.com/)
+**Live Production Web System**: [https://modeling-valued-insertion-statewide.trycloudflare.com/](https://modeling-valued-insertion-statewide.trycloudflare.com/)
 
 ---
 
