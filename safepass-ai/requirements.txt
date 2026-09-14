@@ -10,7 +10,7 @@ pandas==2.2.3
 numpy==1.26.4
 scikit-learn==1.5.2
 xgboost==2.1.1
-hdbscan==0.8.38
+# hdbscan is not used in runtime
 shap==0.45.1
 joblib==1.4.2
 
