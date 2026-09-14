@@ -5,7 +5,7 @@ Main FastAPI Application
 
 import os
 from pathlib import Path
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
@@ -40,6 +40,12 @@ templates = Jinja2Templates(directory=BASE_DIR / "app" / "templates")
 
 # ── API Routes ────────────────────────────────────────────────────────────
 app.include_router(api_router, prefix="/api")
+ 
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon():
+    svg_icon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#EA580C"/><path d="M50 20 L50 60 M50 60 L70 45" stroke="#FFFFFF" stroke-width="8" stroke-linecap="round"/><circle cx="50" cy="50" r="10" fill="#FFFFFF"/></svg>'
+    return Response(content=svg_icon, media_type="image/svg+xml")
+
 
 # ── Global State ──────────────────────────────────────────────────────────
 risk_engine = RiskEngine()

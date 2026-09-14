@@ -724,3 +724,27 @@ async def log_sos(body: LogSosRequest):
     result = await supabase_service.log_sos_incident(body.model_dump())
     return result
 
+
+# ── Direct REST Route Aliases ─────────────────────────────────────────────
+@router.post("/trips")
+async def save_trip_alias(body: SaveTripRequest):
+    return await supabase_service.save_trip(body.model_dump())
+
+@router.get("/trips")
+async def get_trips_alias(limit: int = Query(15, ge=1, le=50)):
+    trips = await supabase_service.get_recent_trips(limit=limit)
+    return {"trips": trips, "count": len(trips)}
+
+@router.post("/hazards")
+async def report_hazard_alias(body: ReportHazardRequest):
+    return await supabase_service.report_hazard(body.model_dump())
+
+@router.get("/hazards")
+async def get_hazards_alias(limit: int = Query(50, ge=1, le=100)):
+    hazards = await supabase_service.get_community_hazards(limit=limit)
+    return {"hazards": hazards, "count": len(hazards)}
+
+@router.post("/sos")
+async def log_sos_alias(body: LogSosRequest):
+    return await supabase_service.log_sos_incident(body.model_dump())
+
