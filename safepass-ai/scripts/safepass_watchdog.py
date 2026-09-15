@@ -135,6 +135,16 @@ def main():
                     subprocess.run(["launchctl", "kickstart", "-k", f"gui/{os.getuid()}/com.safepass.cloudflared"], capture_output=True)
                     time.sleep(3)
 
+            # 4. Continuous Keep-Alive for Railway Production URL (safepass-ai-production.up.railway.app)
+            railway_url = "https://safepass-ai-production.up.railway.app"
+            try:
+                with urllib.request.urlopen(f"{railway_url}/health", timeout=5) as r_resp:
+                    if r_resp.status == 200:
+                        pass # Railway production 100% active
+            except Exception as re_err:
+                log(f"Railway production ping note: {re_err}. Reviving service via railway redeploy...")
+                subprocess.run(["railway", "restart", "--service", "safepass-ai"], capture_output=True)
+
         except Exception as e:
             log(f"Watchdog loop exception: {e}")
 
