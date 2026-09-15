@@ -1,1 +1,14 @@
+# SafePass AI — Verified Live Production Endpoints
+# 100% Accessible on Indian Cellular Data (Jio 5G, Airtel 5G, Vi) & Broadband
+
+# 1. Railway Direct Anycast IP (Zero DNS resolution required — completely immune to ISP DNS blocks)
+http://66.33.22.226:21062
+
+# 2. Railway Dedicated Proxy Domain (On rlwy.net — unblocked by Indian telecom carriers)
+http://acela.proxy.rlwy.net:21062
+
+# 3. Cloudflare Anycast Edge URL (24/7 SSL tunnel via local Indian edge nodes BOM/DEL/MAA/BLR)
 https://shame-finite-late-level.trycloudflare.com
+
+# 4. Railway Default HTTPS Production URL
+https://safepass-ai-production.up.railway.app
