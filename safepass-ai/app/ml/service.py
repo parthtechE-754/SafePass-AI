@@ -18,9 +18,11 @@ logger = logging.getLogger("safepass.ml")
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 MODEL_SEARCH_PATHS = [
     BASE_DIR / "model",
+    BASE_DIR / "safepass-ai" / "model",
     BASE_DIR.parent / "model",
-    Path("/Users/parthsonkusare1340/Hack2026ps1/safepass-ai/model"),
-    Path("/Users/parthsonkusare1340/Hack2026ps1/model"),
+    BASE_DIR.parent / "safepass-ai" / "model",
+    Path.cwd() / "model",
+    Path.cwd() / "safepass-ai" / "model",
 ]
 
 
@@ -98,12 +100,12 @@ class SafePassMLService:
 
             sample_dict = {
                 "time_of_day": time_val,
-                "weather_severity": int(weather_severity),
+                "weather_severity": int(weather_severity or 0),
                 "road_type": road_val,
-                "historical_accident_count": int(historical_accident_count),
-                "visibility_score": float(visibility_score),
-                "traffic_density": float(traffic_density),
-                "is_blackspot": int(is_blackspot),
+                "historical_accident_count": int(historical_accident_count or 0),
+                "visibility_score": float(visibility_score if visibility_score is not None else 8.5),
+                "traffic_density": float(traffic_density if traffic_density is not None else 5.0),
+                "is_blackspot": int(is_blackspot or 0),
             }
 
             df = pd.DataFrame([sample_dict])
@@ -149,9 +151,9 @@ class SafePassMLService:
                 shap_vals = self.shap_explainer.shap_values(X_trans)[0]
                 for fname, sval in zip(feature_names, shap_vals):
                     # Group one-hot encoded categories back to meaningful feature categories
-                    if fname.startswith("cat__time_of_day_"):
+                    if "time_of_day" in fname or "time" in fname:
                         key = "time_of_day"
-                    elif fname.startswith("cat__road_type_"):
+                    elif "road_type" in fname or "road" in fname:
                         key = "road_geometry"
                     elif "visibility" in fname or "weather" in fname:
                         key = "weather_visibility"
@@ -204,9 +206,10 @@ class SafePassMLService:
             ),
         }
 
+        tod_icon = "🌙" if raw_inputs.get("time_of_day") in ["night", "deep-night", "dusk"] else "☀️"
         icons = {
             "weather_visibility": "🌫️",
-            "time_of_day": "🌙",
+            "time_of_day": tod_icon,
             "accident_history": "⚠️",
             "road_geometry": "⛰️",
             "traffic_density": "🚛",

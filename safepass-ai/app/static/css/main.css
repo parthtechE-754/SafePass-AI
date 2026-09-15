@@ -2301,18 +2301,28 @@ html, body {
         right: 8px;
         width: auto;
         max-width: none;
-        max-height: 48vh;
+        max-height: 72vh;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
         padding: 12px;
+    }
+
+    .card-routes-section {
+        overflow: visible;
+    }
+
+    .tab-content-scrollable {
+        max-height: 280px;
     }
 
     .gmaps-floating-rail {
         top: auto;
-        bottom: 88px;
+        bottom: 84px;
         right: 12px;
     }
 
     .gmaps-floating-legend {
-        bottom: 148px;
+        bottom: 144px;
         right: 12px;
     }
 
@@ -2324,5 +2334,11 @@ html, body {
     .drive-bottom-chip {
         bottom: 16px;
         left: 12px;
+    }
+
+    .sos-modal-card {
+        width: calc(100vw - 24px);
+        max-height: 90vh;
+        margin: 12px;
     }
 }

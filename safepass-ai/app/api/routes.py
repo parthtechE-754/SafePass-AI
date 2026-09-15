@@ -145,29 +145,67 @@ def _evaluate_ml_corridor_risk(route_name: str, danger_zones: int, weather: dict
     )
 
 
-@router.post("/predict-risk")
-async def api_predict_risk(body: PredictRiskRequest):
+@router.api_route("/predict-risk", methods=["GET", "POST"])
+async def api_predict_risk(request: Request):
     """
     Task 1 Endpoint: Predict continuous Corridor Risk Index (0-10)
     using trained Gradient Boosting Regressor with SHAP feature attribution explainability.
     """
-    return ml_service.predict_risk(**body.model_dump())
+    body = {}
+    if request.method == "POST":
+        try:
+            body = await request.json()
+        except Exception:
+            try:
+                form = await request.form()
+                body = dict(form)
+            except Exception:
+                body = {}
+
+    qp = dict(request.query_params)
+    merged = {**qp, **(body if isinstance(body, dict) else {})}
+
+    return ml_service.predict_risk(
+        time_of_day=merged.get("time_of_day", "day"),
+        weather_severity=float(merged.get("weather_severity") or 0.0),
+        road_type=merged.get("road_type", "highway"),
+        historical_accident_count=int(merged.get("historical_accident_count") or 5),
+        visibility_score=float(merged.get("visibility_score") if merged.get("visibility_score") is not None else 8.5),
+        traffic_density=float(merged.get("traffic_density") if merged.get("traffic_density") is not None else 5.0),
+        is_blackspot=int(merged.get("is_blackspot") or 0),
+    )
 
 
-@router.post("/classify-hazard")
-async def api_classify_hazard(body: ClassifyHazardRequest):
+@router.api_route("/classify-hazard", methods=["GET", "POST"])
+async def api_classify_hazard(request: Request):
     """
     Task 2 Endpoint: NLP classifier for citizen hazard reports.
     Auto-suggests hazard category & severity with confidence score.
     """
-    return ml_service.classify_hazard(body.text)
+    body = {}
+    if request.method == "POST":
+        try:
+            body = await request.json()
+        except Exception:
+            try:
+                form = await request.form()
+                body = dict(form)
+            except Exception:
+                body = {}
+
+    qp = dict(request.query_params)
+    text = body.get("text") if (isinstance(body, dict) and body.get("text")) else qp.get("text", "")
+    return ml_service.classify_hazard(text=text)
 
 
 # ── System Health Endpoint ───────────────────────────────────────────────
 
-@router.get("/health")
+@router.api_route("/health", methods=["GET", "HEAD"])
 async def api_health(request: Request):
     """Return health status of SafePass AI."""
+    if request.method == "HEAD":
+        from fastapi import Response
+        return Response(status_code=200)
     spots_count = len(getattr(request.app.state, "blackspots", []))
     return {
         "status": "healthy",
@@ -185,9 +223,12 @@ async def api_health(request: Request):
 
 # ── Blackspot Endpoints ──────────────────────────────────────────────────
 
-@router.get("/blackspots")
-async def get_blackspots():
+@router.api_route("/blackspots", methods=["GET", "HEAD"])
+async def get_blackspots(request: Request):
     """Return all blackspots as GeoJSON."""
+    if request.method == "HEAD":
+        from fastapi import Response
+        return Response(status_code=200)
     return get_blackspots_geojson()
 
 
@@ -401,6 +442,7 @@ async def compute_route_risk(request: Request, body: RouteRiskRequest):
 
 
 @router.post("/point/risk")
+@router.post("/point-risk")
 async def compute_point_risk(request: Request, body: PointRiskRequest):
     """Compute risk for a single point."""
     risk_engine: RiskEngine = request.app.state.risk_engine

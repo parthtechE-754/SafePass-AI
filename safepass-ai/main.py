@@ -41,9 +41,11 @@ templates = Jinja2Templates(directory=BASE_DIR / "app" / "templates")
 # ── API Routes ────────────────────────────────────────────────────────────
 app.include_router(api_router, prefix="/api")
  
-@app.get("/favicon.ico", include_in_schema=False)
-async def favicon():
+@app.api_route("/favicon.ico", methods=["GET", "HEAD"], include_in_schema=False)
+async def favicon(request: Request):
     svg_icon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#EA580C"/><path d="M50 20 L50 60 M50 60 L70 45" stroke="#FFFFFF" stroke-width="8" stroke-linecap="round"/><circle cx="50" cy="50" r="10" fill="#FFFFFF"/></svg>'
+    if request.method == "HEAD":
+        return Response(content="", media_type="image/svg+xml")
     return Response(content=svg_icon, media_type="image/svg+xml")
 
 
@@ -65,32 +67,65 @@ async def startup_event():
 
 
 # ── Direct Root ML Endpoints (Task 1 & Task 2) ───────────────────────────
-@app.post("/predict-risk")
+@app.api_route("/predict-risk", methods=["GET", "POST", "HEAD"])
 async def root_predict_risk(request: Request):
     """Direct root endpoint for Corridor Risk Index (CRI) ML prediction with SHAP."""
-    body = await request.json()
+    if request.method == "HEAD":
+        return Response(status_code=200)
+
+    body = {}
+    if request.method == "POST":
+        try:
+            body = await request.json()
+        except Exception:
+            try:
+                form = await request.form()
+                body = dict(form)
+            except Exception:
+                body = {}
+
+    qp = dict(request.query_params)
+    merged = {**qp, **(body if isinstance(body, dict) else {})}
+
     return ml_service.predict_risk(
-        time_of_day=body.get("time_of_day", "day"),
-        weather_severity=body.get("weather_severity", 0),
-        road_type=body.get("road_type", "highway"),
-        historical_accident_count=body.get("historical_accident_count", 5),
-        visibility_score=body.get("visibility_score", 8.5),
-        traffic_density=body.get("traffic_density", 5.0),
-        is_blackspot=body.get("is_blackspot", 0),
+        time_of_day=merged.get("time_of_day", "day"),
+        weather_severity=float(merged.get("weather_severity") or 0.0),
+        road_type=merged.get("road_type", "highway"),
+        historical_accident_count=int(merged.get("historical_accident_count") or 5),
+        visibility_score=float(merged.get("visibility_score") if merged.get("visibility_score") is not None else 8.5),
+        traffic_density=float(merged.get("traffic_density") if merged.get("traffic_density") is not None else 5.0),
+        is_blackspot=int(merged.get("is_blackspot") or 0),
     )
 
 
-@app.post("/classify-hazard")
+@app.api_route("/classify-hazard", methods=["GET", "POST", "HEAD"])
 async def root_classify_hazard(request: Request):
     """Direct root endpoint for citizen hazard NLP classification."""
-    body = await request.json()
-    return ml_service.classify_hazard(text=body.get("text", ""))
+    if request.method == "HEAD":
+        return Response(status_code=200)
+
+    body = {}
+    if request.method == "POST":
+        try:
+            body = await request.json()
+        except Exception:
+            try:
+                form = await request.form()
+                body = dict(form)
+            except Exception:
+                body = {}
+
+    qp = dict(request.query_params)
+    text = body.get("text") if (isinstance(body, dict) and body.get("text")) else qp.get("text", "")
+    return ml_service.classify_hazard(text=text)
 
 
 # ── Page Routes ───────────────────────────────────────────────────────────
-@app.get("/")
+@app.api_route("/", methods=["GET", "HEAD"])
 async def home(request: Request):
     """Main SafePass AI dashboard."""
+    if request.method == "HEAD":
+        return Response(status_code=200)
     return templates.TemplateResponse(
         request=request,
         name="index.html",
@@ -100,9 +135,11 @@ async def home(request: Request):
     )
 
 
-@app.get("/dashboard")
+@app.api_route("/dashboard", methods=["GET", "HEAD"])
 async def dashboard(request: Request):
     """Admin dashboard with risk heatmap."""
+    if request.method == "HEAD":
+        return Response(status_code=200)
     return templates.TemplateResponse(
         request=request,
         name="dashboard.html",
@@ -112,9 +149,11 @@ async def dashboard(request: Request):
     )
 
 
-@app.get("/model-card")
+@app.api_route("/model-card", methods=["GET", "HEAD"])
 async def model_card(request: Request, format: str = "html"):
     """Serve MODEL_CARD specification with executive dark-theme viewer for SIH judges."""
+    if request.method == "HEAD":
+        return Response(status_code=200)
     from fastapi.responses import PlainTextResponse
     card_content = ""
     for p in [Path(__file__).parent / "MODEL_CARD.md", Path(__file__).parent.parent / "MODEL_CARD.md"]:
@@ -132,9 +171,10 @@ async def model_card(request: Request, format: str = "html"):
     )
 
 
-
-@app.get("/health")
-async def health():
+@app.api_route("/health", methods=["GET", "HEAD"])
+async def health(request: Request):
+    if request.method == "HEAD":
+        return Response(status_code=200)
     return {
         "status": "healthy",
         "service": "SafePass AI",
